@@ -1,6 +1,5 @@
 package com.epam.esm.model;
 
-import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 import java.util.Set;

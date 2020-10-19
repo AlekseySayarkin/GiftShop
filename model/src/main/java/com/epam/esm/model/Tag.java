@@ -1,12 +1,10 @@
-package com.epam.esm.bean;
+package com.epam.esm.model;
 
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.Set;
 
-public class Tag implements Serializable {
-
-    private static final long serialVersionUID = 7045384298313604528L;
+public class Tag {
 
     private int id;
     private String name;

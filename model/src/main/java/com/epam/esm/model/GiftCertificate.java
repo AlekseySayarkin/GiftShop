@@ -1,13 +1,11 @@
-package com.epam.esm.bean;
+package com.epam.esm.model;
 
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 import java.util.Set;
 
-public class GiftCertificate implements Serializable {
-
-    private static final long serialVersionUID = 1035387299513654573L;
+public class GiftCertificate {
 
     private int id;
     private String name;
@@ -15,7 +13,7 @@ public class GiftCertificate implements Serializable {
     private int price;
     private ZonedDateTime createDate;
     private ZonedDateTime lastUpdateDate;
-    private ZonedDateTime duration;
+    private int duration;
     private Set<Tag> tags;
 
     public int getId() {
@@ -66,11 +64,11 @@ public class GiftCertificate implements Serializable {
         this.lastUpdateDate = lastUpdateDate;
     }
 
-    public ZonedDateTime getDuration() {
+    public int getDuration() {
         return duration;
     }
 
-    public void setDuration(ZonedDateTime duration) {
+    public void setDuration(int duration) {
         this.duration = duration;
     }
 
@@ -89,11 +87,11 @@ public class GiftCertificate implements Serializable {
         GiftCertificate that = (GiftCertificate) o;
         return id == that.id &&
                 price == that.price &&
+                duration == that.duration &&
                 name.equals(that.name) &&
                 description.equals(that.description) &&
                 createDate.equals(that.createDate) &&
                 Objects.equals(lastUpdateDate, that.lastUpdateDate) &&
-                duration.equals(that.duration) &&
                 Objects.equals(tags, that.tags);
     }
 

@@ -90,7 +90,7 @@ public class GiftCertificate {
                 name.equals(that.name) &&
                 description.equals(that.description) &&
                 createDate.equals(that.createDate) &&
-                Objects.equals(lastUpdateDate, that.lastUpdateDate) &&
+                lastUpdateDate.equals(that.lastUpdateDate) &&
                 Objects.equals(tags, that.tags);
     }
 

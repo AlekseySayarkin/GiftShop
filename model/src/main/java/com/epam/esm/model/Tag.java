@@ -7,7 +7,6 @@ public class Tag {
 
     private int id;
     private String name;
-    private Set<GiftCertificate> giftCertificates;
 
     public int getId() {
         return id;
@@ -25,27 +24,17 @@ public class Tag {
         this.name = name;
     }
 
-    public Set<GiftCertificate> getGiftCertificates() {
-        return giftCertificates;
-    }
-
-    public void setGiftCertificates(Set<GiftCertificate> giftCertificates) {
-        this.giftCertificates = giftCertificates;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Tag tag = (Tag) o;
-        return id == tag.id &&
-                name.equals(tag.name) &&
-                Objects.equals(giftCertificates, tag.giftCertificates);
+        return id == tag.id && name.equals(tag.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, giftCertificates);
+        return Objects.hash(id, name);
     }
 
     @Override
@@ -53,7 +42,6 @@ public class Tag {
         return "Tag{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", giftCertificates=" + giftCertificates +
                 '}';
     }
 }

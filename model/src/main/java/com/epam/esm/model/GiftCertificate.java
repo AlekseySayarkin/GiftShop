@@ -9,7 +9,7 @@ public class GiftCertificate {
     private int id;
     private String name;
     private String description;
-    private int price;
+    private double price;
     private ZonedDateTime createDate;
     private ZonedDateTime lastUpdateDate;
     private int duration;
@@ -39,7 +39,7 @@ public class GiftCertificate {
         this.description = description;
     }
 
-    public int getPrice() {
+    public double getPrice() {
         return price;
     }
 

@@ -24,7 +24,7 @@ CREATE TABLE `GiftCertificates` (
   `ID` int NOT NULL AUTO_INCREMENT,
   `Name` varchar(45) NOT NULL,
   `Description` varchar(45) NOT NULL,
-  `Price` int NOT NULL,
+  `Price` DOUBLE NOT NULL,
   `CreateDate` datetime NOT NULL,
   `LastUpdateDate` datetime NOT NULL,
   `Duration` int NOT NULL,

@@ -1,3 +1,5 @@
 .gradle
 .idea
+persistence/build
+service/build
 web/build

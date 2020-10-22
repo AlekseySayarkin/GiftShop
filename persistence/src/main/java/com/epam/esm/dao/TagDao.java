@@ -10,6 +10,6 @@ public interface TagDao {
     Tag getTagById(int id);
     List<Tag> getTags();
 
-    boolean addTag(Tag tag);
+    int addTag(Tag tag);
     boolean deleteTag(Tag tag);
 }

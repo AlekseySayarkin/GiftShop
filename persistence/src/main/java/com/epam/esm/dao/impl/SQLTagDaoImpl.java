@@ -3,14 +3,12 @@ package com.epam.esm.dao.impl;
 import com.epam.esm.dao.TagDao;
 import com.epam.esm.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-@Qualifier("tagDao")
 public class SQLTagDaoImpl implements TagDao {
 
     private final JdbcTemplate jdbcTemplate;
@@ -41,8 +39,8 @@ public class SQLTagDaoImpl implements TagDao {
     }
 
     @Override
-    public boolean addTag(Tag tag) {
-        return false;
+    public int addTag(Tag tag) {
+        return 0;
     }
 
     @Override

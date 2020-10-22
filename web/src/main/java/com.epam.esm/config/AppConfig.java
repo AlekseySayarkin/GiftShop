@@ -1,12 +1,15 @@
 package com.epam.esm.config;
 
 import com.epam.esm.dao.impl.SQLTagDaoImpl;
+import com.epam.esm.dao.mapper.TagRowMapper;
+import com.epam.esm.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import javax.sql.DataSource;
@@ -39,7 +42,12 @@ public class AppConfig {
     }
 
     @Bean
-    public SQLTagDaoImpl tagDAO(JdbcTemplate jdbcTemplate) {
-        return new SQLTagDaoImpl(jdbcTemplate);
+    public TagRowMapper tagRowMapper() {
+        return new TagRowMapper();
+    }
+
+    @Bean
+    public SQLTagDaoImpl tagDAO(JdbcTemplate jdbcTemplate, RowMapper<Tag> rowMapper) {
+        return new SQLTagDaoImpl(jdbcTemplate, rowMapper);
     }
 }

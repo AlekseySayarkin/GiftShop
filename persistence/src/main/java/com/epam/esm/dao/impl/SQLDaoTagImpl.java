@@ -1,6 +1,6 @@
 package com.epam.esm.dao.impl;
 
-import com.epam.esm.dao.TagDAO;
+import com.epam.esm.dao.TagDao;
 import com.epam.esm.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -11,7 +11,7 @@ import java.util.List;
 
 @Repository
 @Qualifier("tagDao")
-public class SQLTagImpl implements TagDAO {
+public class SQLDaoTagImpl implements TagDao {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;

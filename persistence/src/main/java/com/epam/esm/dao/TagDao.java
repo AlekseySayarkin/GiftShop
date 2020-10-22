@@ -4,7 +4,7 @@ import com.epam.esm.model.Tag;
 
 import java.util.List;
 
-public interface TagDAO {
+public interface TagDao {
 
     Tag getTagByName(String name);
     Tag getTagById(int id);

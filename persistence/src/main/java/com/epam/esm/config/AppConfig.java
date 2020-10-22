@@ -1,6 +1,6 @@
 package com.epam.esm.config;
 
-import com.epam.esm.dao.impl.SQLTagImpl;
+import com.epam.esm.dao.impl.SQLDaoTagImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -30,7 +30,7 @@ public class AppConfig {
     }
 
     @Bean
-    public SQLTagImpl tagDAO() {
-        return new SQLTagImpl();
+    public SQLDaoTagImpl tagDAO() {
+        return new SQLDaoTagImpl();
     }
 }

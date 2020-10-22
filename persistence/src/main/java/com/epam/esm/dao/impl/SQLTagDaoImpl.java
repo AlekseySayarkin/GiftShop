@@ -11,10 +11,14 @@ import java.util.List;
 
 @Repository
 @Qualifier("tagDao")
-public class SQLDaoTagImpl implements TagDao {
+public class SQLTagDaoImpl implements TagDao {
+
+    private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    public SQLTagDaoImpl(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     @Override
     public Tag getTagByName(String name) {

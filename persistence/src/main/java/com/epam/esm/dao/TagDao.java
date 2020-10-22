@@ -7,9 +7,8 @@ public interface TagDao {
 
     Tag getTagByName(String name);
     Tag getTagById(int id);
-    List<Tag> getTags();
+    List<Tag> getAllTags();
 
     int addTag(Tag tag);
     boolean deleteTag(Tag tag);
-    boolean updateTag(Tag tag);
 }

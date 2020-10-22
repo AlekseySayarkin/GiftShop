@@ -17,7 +17,6 @@ public class SQLTagDaoImpl implements TagDao {
     private static final String SQL_GET_BY_ID = "select Id, Name from Tags where Id = ?";
     private static final String SQL_ADD_TAG = "INSERT INTO GiftShop.Tags (Name) VALUES (?)";
     private static final String SQL_DELETE_TAG = "DELETE FROM GiftShop.Tags WHERE ID = ?";
-    private static final String SQL_UPDATE_TAG = "UPDATE GiftShop.Tags SET Name = ? WHERE ID = ?";
 
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<Tag> tagRowMapper;
@@ -39,7 +38,7 @@ public class SQLTagDaoImpl implements TagDao {
     }
 
     @Override
-    public List<Tag> getTags() {
+    public List<Tag> getAllTags() {
         return jdbcTemplate.query(SQL_GET_ALL, tagRowMapper);
     }
 
@@ -51,11 +50,6 @@ public class SQLTagDaoImpl implements TagDao {
 
     @Override
     public boolean deleteTag(Tag tag) {
-        return jdbcTemplate.update(SQL_DELETE_TAG, tag.getName()) == 1;
-    }
-
-    @Override
-    public boolean updateTag(Tag tag) {
-        return jdbcTemplate.update(SQL_UPDATE_TAG, tag.getName(), tag.getId()) == 1;
+        return jdbcTemplate.update(SQL_DELETE_TAG, tag.getId()) == 1;
     }
 }

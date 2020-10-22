@@ -1,6 +1,7 @@
 package com.epam.esm.dao.impl;
 
 import com.epam.esm.dao.TagDao;
+import com.epam.esm.dao.mapper.TagRawMapper;
 import com.epam.esm.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -30,12 +31,7 @@ public class SQLTagDaoImpl implements TagDao {
 
     @Override
     public List<Tag> getTags() {
-        return jdbcTemplate.query("select * from Tags", (rs, rowNum) -> {
-            Tag tag = new Tag();
-            tag.setId(rs.getInt(1));
-            tag.setName(rs.getString(2));
-            return tag;
-        });
+        return jdbcTemplate.query("select * from Tags", new TagRawMapper());
     }
 
     @Override
@@ -45,6 +41,11 @@ public class SQLTagDaoImpl implements TagDao {
 
     @Override
     public boolean deleteTag(Tag tag) {
+        return false;
+    }
+
+    @Override
+    public boolean updateTag(Tag tag) {
         return false;
     }
 }

@@ -12,4 +12,5 @@ public interface TagDao {
 
     int addTag(Tag tag);
     boolean deleteTag(Tag tag);
+    boolean updateTag(Tag tag);
 }

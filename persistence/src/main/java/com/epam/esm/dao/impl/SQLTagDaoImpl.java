@@ -12,11 +12,11 @@ import java.util.List;
 @Repository
 public class SQLTagDaoImpl implements TagDao {
 
-    private static final String SQL_GET_ALL = "select Id, Name from Tags";
-    private static final String SQL_GET_BY_NAME = "select Id, Name from Tags where Name = ?";
-    private static final String SQL_GET_BY_ID = "select Id, Name from Tags where Id = ?";
-    private static final String SQL_ADD_TAG = "INSERT INTO GiftShop.Tags (Name) VALUES (?)";
-    private static final String SQL_DELETE_TAG = "DELETE FROM GiftShop.Tags WHERE ID = ?";
+    private static final String SQL_GET_ALL_TAGS = "select Id, Name from Tags";
+    private static final String SQL_GET_TAG_BY_NAME = "select Id, Name from Tags where Name = ?";
+    private static final String SQL_GET_TAG_BY_ID = "select Id, Name from Tags where Id = ?";
+    private static final String SQL_ADD_TAG = "insert into GiftShop.Tags (Name) values (?)";
+    private static final String SQL_DELETE_TAG = "delete from GiftShop.Tags where ID = ?";
 
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<Tag> tagRowMapper;
@@ -29,17 +29,17 @@ public class SQLTagDaoImpl implements TagDao {
 
     @Override
     public Tag getTagByName(String name) {
-        return jdbcTemplate.queryForObject(SQL_GET_BY_NAME, new Object[] { name }, tagRowMapper);
+        return jdbcTemplate.queryForObject(SQL_GET_TAG_BY_NAME, new Object[] { name }, tagRowMapper);
     }
 
     @Override
     public Tag getTagById(int id) {
-        return jdbcTemplate.queryForObject(SQL_GET_BY_ID, new Object[] { id }, tagRowMapper);
+        return jdbcTemplate.queryForObject(SQL_GET_TAG_BY_ID, new Object[] { id }, tagRowMapper);
     }
 
     @Override
     public List<Tag> getAllTags() {
-        return jdbcTemplate.query(SQL_GET_ALL, tagRowMapper);
+        return jdbcTemplate.query(SQL_GET_ALL_TAGS, tagRowMapper);
     }
 
     @Override

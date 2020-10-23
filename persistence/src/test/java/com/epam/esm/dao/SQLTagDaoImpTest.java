@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -20,16 +21,17 @@ public class SQLTagDaoImpTest {
     @Mock
     private JdbcTemplate jdbcTemplate;
 
-    private RowMapper<Tag> mapper = new TagRowMapper();
+    private final RowMapper<Tag> mapper = new TagRowMapper();
+    private TagDao tagDao;
 
     @Before
     public void init() {
         MockitoAnnotations.initMocks(this);
+        tagDao = new SQLTagDaoImpl(jdbcTemplate, mapper);
     }
 
     @Test
     public void whenMockJdbcTemplate_thenCorrectlyReturnAllTags() {
-        TagDao tagDao = new SQLTagDaoImpl(jdbcTemplate, mapper);
         String SQL_GET_ALL = "select Id, Name from Tags";
 
         List<Tag> tagsToReturn = new ArrayList<>();
@@ -46,7 +48,7 @@ public class SQLTagDaoImpTest {
     public void whenMockJdbcTemplate_thenCorrectlyDeleteTag() {
         TagDao tagDao = new SQLTagDaoImpl(jdbcTemplate, mapper);
 
-        String SQL_DELETE_TAG = "DELETE FROM GiftShop.Tags WHERE ID = ?";
+        String SQL_DELETE_TAG = "delete from GiftShop.Tags where ID = ?";
         Tag existingTag = new Tag(1, "Existing tag");
         Tag notExistingTag = new Tag(2, "Not Existing Tag");
 

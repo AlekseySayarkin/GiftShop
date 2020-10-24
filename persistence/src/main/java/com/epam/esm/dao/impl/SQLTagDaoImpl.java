@@ -5,8 +5,11 @@ import com.epam.esm.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.List;
 
 @Repository
@@ -15,8 +18,8 @@ public class SQLTagDaoImpl implements TagDao {
     private static final String SQL_GET_ALL_TAGS = "select Id, Name from Tags";
     private static final String SQL_GET_TAG_BY_NAME = "select Id, Name from Tags where Name = ?";
     private static final String SQL_GET_TAG_BY_ID = "select Id, Name from Tags where Id = ?";
-    private static final String SQL_ADD_TAG = "insert into GiftShop.Tags (Name) values (?)";
-    private static final String SQL_DELETE_TAG = "delete from GiftShop.Tags where ID = ?";
+    private static final String SQL_ADD_TAG = "insert into Tags (Name) values (?)";
+    private static final String SQL_DELETE_TAG = "delete from Tags where ID = ?";
 
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<Tag> tagRowMapper;
@@ -44,8 +47,14 @@ public class SQLTagDaoImpl implements TagDao {
 
     @Override
     public int addTag(Tag tag) {
-        //todo add correct implementation
-        return jdbcTemplate.queryForObject(SQL_ADD_TAG, Tag.class ,tag.getName()).getId();
+        KeyHolder holder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(SQL_ADD_TAG, Statement.RETURN_GENERATED_KEYS);
+            ps.setString(1, tag.getName());
+            return ps;
+        }, holder);
+
+        return holder.getKey() == null ? 0 : holder.getKey().intValue();
     }
 
     @Override

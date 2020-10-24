@@ -6,55 +6,62 @@ import com.epam.esm.model.Tag;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
+import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.List;
 
 public class SQLTagDaoImpTest {
 
-    @Mock
-    private JdbcTemplate jdbcTemplate;
-
-    private final RowMapper<Tag> mapper = new TagRowMapper();
     private TagDao tagDao;
 
     @Before
     public void init() {
-        MockitoAnnotations.initMocks(this);
-        tagDao = new SQLTagDaoImpl(jdbcTemplate, mapper);
+        DataSource dataSource = new EmbeddedDatabaseBuilder()
+                .setType(EmbeddedDatabaseType.H2)
+                .addScript("db/schema.sql")
+                .build();
+
+
+        tagDao = new SQLTagDaoImpl(new JdbcTemplate(dataSource), new TagRowMapper());
     }
 
     @Test
-    public void whenMockJdbcTemplate_thenCorrectlyReturnAllTags() {
-        String SQL_GET_ALL = "select Id, Name from Tags";
+    public void whenAddTag_thenCorrectlyDeleteId() {
+        Tag tagToDelete = new Tag(1, "Tag to return");
+        tagDao.addTag(tagToDelete);
+        Assert.assertTrue(tagDao.deleteTag(tagToDelete));
+    }
 
+    @Test
+    public void whenAddTag_thenReturnNonZeroId() {
+        Tag tagToAdd = new Tag(1, "Tag to add");
+        Assert.assertNotEquals(0, tagDao.addTag(tagToAdd));
+
+    }
+
+    @Test
+    public void whenAddTag_thenCorrectlyReturnIt() {
+        Tag tagToReturn = new Tag(1, "Tag to return");
+        tagDao.addTag(tagToReturn);
+        Assert.assertEquals(tagToReturn, tagDao.getTagById(tagToReturn.getId()));
+        Assert.assertEquals(tagToReturn, tagDao.getTagByName(tagToReturn.getName()));
+    }
+
+    @Test
+    public void whenAddTags_thenCorrectlyReturnsIt() {
         List<Tag> tagsToReturn = new ArrayList<>();
-        tagsToReturn.add(new Tag(1, "First tag"));
-        tagsToReturn.add(new Tag(2, "Second tag"));
-        tagsToReturn.add(new Tag(3, "Third tag"));
+        tagsToReturn.add(new Tag(1, "Tag one"));
+        tagsToReturn.add(new Tag(2, "Tag two"));
+        tagsToReturn.add(new Tag(3, "Tag three"));
 
-        Mockito.when(jdbcTemplate.query(SQL_GET_ALL, mapper)).thenReturn(tagsToReturn);
+        for (Tag tag: tagsToReturn) {
+            tagDao.addTag(tag);
+        }
 
         Assert.assertEquals(tagsToReturn, tagDao.getAllTags());
-    }
-
-    @Test
-    public void whenMockJdbcTemplate_thenCorrectlyDeleteTag() {
-        TagDao tagDao = new SQLTagDaoImpl(jdbcTemplate, mapper);
-
-        String SQL_DELETE_TAG = "delete from GiftShop.Tags where ID = ?";
-        Tag existingTag = new Tag(1, "Existing tag");
-        Tag notExistingTag = new Tag(2, "Not Existing Tag");
-
-        Mockito.when(jdbcTemplate.update(SQL_DELETE_TAG, existingTag.getId())).thenReturn(1);
-
-        Assert.assertTrue(tagDao.deleteTag(existingTag));
-        Assert.assertFalse(tagDao.deleteTag(notExistingTag));
     }
 }

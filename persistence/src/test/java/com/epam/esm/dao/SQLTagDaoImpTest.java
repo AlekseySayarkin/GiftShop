@@ -22,7 +22,8 @@ public class SQLTagDaoImpTest {
     public void init() {
         DataSource dataSource = new EmbeddedDatabaseBuilder()
                 .setType(EmbeddedDatabaseType.H2)
-                .addScript("db/schema.sql")
+                .addScripts("db/ClearTables.sql")
+                .addScript("db/Tags.sql")
                 .build();
 
         tagDao = new SQLTagDaoImpl(new JdbcTemplate(dataSource), new TagRowMapper());
@@ -32,20 +33,23 @@ public class SQLTagDaoImpTest {
     public void whenAddTag_thenCorrectlyDeleteId() {
         Tag tagToDelete = new Tag("Tag to delete");
         tagToDelete.setId(tagDao.addTag(tagToDelete));
-        Assert.assertTrue(tagDao.deleteTag(tagToDelete));
+        Assert.assertTrue(tagDao.deleteTag(tagToDelete.getId()));
     }
 
     @Test
-    public void whenAddTag_thenReturnNonZeroId() {
+    public void whenAddTag_thenCorrectlyReturnItById() {
         Tag tagToAdd = new Tag("Tag to add");
-        Assert.assertNotEquals(0, tagDao.addTag(tagToAdd));
+        tagToAdd.setId(tagDao.addTag(tagToAdd));
+
+        Assert.assertEquals(tagToAdd, tagDao.getTag(tagToAdd.getId()));
     }
 
     @Test
-    public void whenAddTag_thenCorrectlyReturnIt() {
+    public void whenAddTag_thenCorrectlyReturnItByName() {
         Tag tagToReturn = new Tag("Tag to return");
-        tagDao.addTag(tagToReturn);
-        Assert.assertEquals(tagToReturn.getName(), tagDao.getTagByName(tagToReturn.getName()).getName());
+        tagToReturn.setId(tagDao.addTag(tagToReturn));
+
+        Assert.assertEquals(tagToReturn, tagDao.getTag(tagToReturn.getName()));
     }
 
     @Test
@@ -56,11 +60,9 @@ public class SQLTagDaoImpTest {
         tagsToReturn.add(new Tag("Tag three"));
 
         for (Tag tag: tagsToReturn) {
-            tagDao.addTag(tag);
+            tag.setId(tagDao.addTag(tag));
         }
 
-        for (Tag tag: tagsToReturn) {
-            Assert.assertEquals(tag.getName(), tagDao.getTagByName(tag.getName()).getName());
-        }
+        Assert.assertEquals(tagsToReturn, tagDao.getAllTags());
     }
 }

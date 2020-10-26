@@ -5,10 +5,10 @@ import java.util.List;
 
 public interface TagDao {
 
-    Tag getTagByName(String name);
-    Tag getTagById(int id);
+    Tag getTag(String name);
+    Tag getTag(int id);
     List<Tag> getAllTags();
 
     int addTag(Tag tag);
-    boolean deleteTag(Tag tag);
+    boolean deleteTag(int tagId);
 }

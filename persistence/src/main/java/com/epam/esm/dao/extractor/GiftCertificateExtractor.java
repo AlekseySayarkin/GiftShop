@@ -18,12 +18,23 @@ import java.util.Map;
 @Component
 public class GiftCertificateExtractor implements ResultSetExtractor<List<GiftCertificate>> {
 
+    private static final String CERTIFICATE_ID_COLUMN = "ID";
+    private static final String CERTIFICATE_NAME_COLUMN = "Name";
+    private static final String CERTIFICATE_DESCRIPTION_COLUMN = "Description";
+    private static final String CERTIFICATE_PRICE_COLUMN = "Price";
+    private static final String CERTIFICATE_CREATE_DATE_COLUMN = "CreateDate";
+    private static final String CERTIFICATE_LAST_UPDATE_DATE_COLUMN = "LastUpdateDate";
+    private static final String CERTIFICATE_DURATION_COLUMN = "Duration";
+
+    private static final String TAG_ID_COLUMN = "TAGS.ID";
+    private static final String TAG_NAME_COLUMN = "TAGS.Name";
+
     @Override
     public List<GiftCertificate> extractData(ResultSet rs) throws SQLException {
-        return new ArrayList<>(extractDataFromResultSet(rs).values());
+        return extractDataFromResultSet(rs);
     }
 
-    private Map<Integer, GiftCertificate> extractDataFromResultSet(ResultSet rs) throws SQLException {
+    private List<GiftCertificate> extractDataFromResultSet(ResultSet rs) throws SQLException {
         Map<Integer, GiftCertificate> map = new LinkedHashMap<>();
 
         while (rs.next()) {
@@ -36,35 +47,35 @@ public class GiftCertificateExtractor implements ResultSetExtractor<List<GiftCer
             initTags(rs, giftCertificate);
         }
 
-        return map;
+        return new ArrayList<>(map.values());
     }
 
     private GiftCertificate initGiftCertificate(ResultSet rs) throws SQLException {
         GiftCertificate giftCertificate = new GiftCertificate();
 
-        giftCertificate.setId(rs.getInt(1));
-        giftCertificate.setName(rs.getString(2));
-        giftCertificate.setDescription(rs.getString(3));
-        giftCertificate.setPrice(rs.getDouble(4));
+        giftCertificate.setId(rs.getInt(CERTIFICATE_ID_COLUMN));
+        giftCertificate.setName(rs.getString(CERTIFICATE_NAME_COLUMN));
+        giftCertificate.setDescription(rs.getString(CERTIFICATE_DESCRIPTION_COLUMN));
+        giftCertificate.setPrice(rs.getDouble(CERTIFICATE_PRICE_COLUMN));
         giftCertificate.setCreateDate(
                 ZonedDateTime.ofInstant(
-                        ((Timestamp) rs.getObject(5)).toInstant(),
+                        ((Timestamp) rs.getObject(CERTIFICATE_CREATE_DATE_COLUMN)).toInstant(),
                         ZoneOffset.UTC
                 )
         );
         giftCertificate.setLastUpdateDate(
                 ZonedDateTime.ofInstant(
-                        ((Timestamp) rs.getObject(6)).toInstant(),
+                        ((Timestamp) rs.getObject(CERTIFICATE_LAST_UPDATE_DATE_COLUMN)).toInstant(),
                         ZoneOffset.UTC
                 )
         );
-        giftCertificate.setDuration(rs.getInt(7));
+        giftCertificate.setDuration(rs.getInt(CERTIFICATE_DURATION_COLUMN));
 
         return giftCertificate;
     }
 
     private void initTags(ResultSet rs, GiftCertificate giftCertificate) throws SQLException {
-        Tag tag = new Tag(rs.getInt(10), rs.getString(11));
+        Tag tag = new Tag(rs.getInt(TAG_ID_COLUMN), rs.getString(TAG_NAME_COLUMN));
         if (tag.getId() != 0 && tag.getName() != null) {
             giftCertificate.getTags().add(tag);
         }

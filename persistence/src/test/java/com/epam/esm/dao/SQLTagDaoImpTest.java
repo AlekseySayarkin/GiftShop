@@ -39,10 +39,10 @@ public class SQLTagDaoImpTest {
         actual = new Tag("Tag to return");
         actual.setId(tagDao.addTag(actual));
 
-        expected = tagDao.getTagById(actual.getId());
+        expected = tagDao.getTag(actual.getId());
         Assert.assertEquals(actual, expected);
 
-        expected = tagDao.getTagByName(actual.getName());
+        expected = tagDao.getTag(actual.getName());
         Assert.assertEquals(actual, expected);
     }
 
@@ -51,7 +51,7 @@ public class SQLTagDaoImpTest {
         Tag tag = new Tag("Tag to delete");
         tag.setId(tagDao.addTag(tag));
 
-        boolean result = tagDao.deleteTag(tag);
+        boolean result = tagDao.deleteTag(tag.getId());
         Assert.assertTrue(result);
     }
 

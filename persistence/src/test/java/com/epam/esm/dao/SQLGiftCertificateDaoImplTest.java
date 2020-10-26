@@ -57,8 +57,8 @@ public class SQLGiftCertificateDaoImplTest {
         certificate.setDuration(10);
 
         Set<Tag> tags = new HashSet<>();
-        tags.add(tagDao.getTagByName("tourism"));
-        tags.add(tagDao.getTagByName("relax"));
+        tags.add(tagDao.getTag("tourism"));
+        tags.add(tagDao.getTag("relax"));
         certificate.setTags(tags);
 
         return certificate;
@@ -72,8 +72,8 @@ public class SQLGiftCertificateDaoImplTest {
         expected = initCertificate();
         expected.setId(giftCertificateDAO.addGiftCertificate(expected));
 
-        giftCertificateDAO.createCertificateTagRelation(expected.getId(), tagDao.getTagByName("tourism").getId());
-        giftCertificateDAO.createCertificateTagRelation(expected.getId(), tagDao.getTagByName("relax").getId());
+        giftCertificateDAO.createCertificateTagRelation(expected.getId(), tagDao.getTag("tourism").getId());
+        giftCertificateDAO.createCertificateTagRelation(expected.getId(), tagDao.getTag("relax").getId());
 
         actual = giftCertificateDAO.getGiftCertificate(expected.getName());
         Assert.assertEquals(expected, actual);
@@ -94,8 +94,8 @@ public class SQLGiftCertificateDaoImplTest {
             certificate.setName("name" + i);
             certificate.setId(giftCertificateDAO.addGiftCertificate(certificate));
 
-            giftCertificateDAO.createCertificateTagRelation(certificate.getId(), tagDao.getTagByName("tourism").getId());
-            giftCertificateDAO.createCertificateTagRelation(certificate.getId(), tagDao.getTagByName("relax").getId());
+            giftCertificateDAO.createCertificateTagRelation(certificate.getId(), tagDao.getTag("tourism").getId());
+            giftCertificateDAO.createCertificateTagRelation(certificate.getId(), tagDao.getTag("relax").getId());
 
             expected.add(certificate);
         }
@@ -113,11 +113,11 @@ public class SQLGiftCertificateDaoImplTest {
         certificate.setId(giftCertificateDAO.addGiftCertificate(certificate));
 
         for (Tag tag: certificate.getTags()) {
-            giftCertificateDAO.createCertificateTagRelation(certificate.getId(), tagDao.getTagByName(tag.getName()).getId());
+            giftCertificateDAO.createCertificateTagRelation(certificate.getId(), tagDao.getTag(tag.getName()).getId());
         }
 
         for (Tag tag: certificate.getTags()) {
-            giftCertificateDAO.deleteCertificateTagRelation(certificate.getId(), tagDao.getTagByName(tag.getName()).getId());
+            giftCertificateDAO.deleteCertificateTagRelation(certificate.getId(), tagDao.getTag(tag.getName()).getId());
         }
 
         Assert.assertTrue(giftCertificateDAO.deleteGiftCertificate(certificate));
@@ -163,7 +163,7 @@ public class SQLGiftCertificateDaoImplTest {
         toUpdate.setDescription("new description");
         toUpdate.setPrice(199.99);
         toUpdate.setDuration(99);
-        toUpdate.getTags().add(tagDao.getTagByName("spa"));
+        toUpdate.getTags().add(tagDao.getTag("spa"));
 
         for (Tag tag: toUpdate.getTags()) {
             giftCertificateDAO.createCertificateTagRelation(toUpdate.getId(), tag.getId());

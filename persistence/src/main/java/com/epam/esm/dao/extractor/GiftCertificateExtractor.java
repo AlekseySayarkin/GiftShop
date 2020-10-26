@@ -32,7 +32,8 @@ public class GiftCertificateExtractor implements ResultSetExtractor<List<GiftCer
                 giftCertificate = initGiftCertificate(rs);
                 map.put(giftCertificate.getId(), giftCertificate);
             }
-            giftCertificate.getTags().add(new Tag(rs.getInt(10), rs.getString(11)));
+
+            initTags(rs, giftCertificate);
         }
 
         return map;
@@ -60,5 +61,12 @@ public class GiftCertificateExtractor implements ResultSetExtractor<List<GiftCer
         giftCertificate.setDuration(rs.getInt(7));
 
         return giftCertificate;
+    }
+
+    private void initTags(ResultSet rs, GiftCertificate giftCertificate) throws SQLException {
+        Tag tag = new Tag(rs.getInt(10), rs.getString(11));
+        if (tag.getId() != 0 && tag.getName() != null) {
+            giftCertificate.getTags().add(tag);
+        }
     }
 }

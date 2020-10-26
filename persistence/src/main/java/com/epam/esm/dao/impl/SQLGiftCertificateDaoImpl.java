@@ -12,6 +12,9 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -20,33 +23,33 @@ public class SQLGiftCertificateDaoImpl implements GiftCertificateDAO {
 
     private static final String SQL_GET_CERTIFICATE_BY_ID =
             "select * from GiftCertificates " +
-            "inner join CertificateDetails " +
+            "left join CertificateDetails " +
             "on GiftCertificates.ID = CertificateDetails.CertificateID " +
-            "and GiftCertificates.ID = ? " +
-            "inner join Tags " +
-            "on Tags.ID = CertificateDetails.TagID";
+            "left join Tags " +
+            "on Tags.ID = CertificateDetails.TagID " +
+            "where GiftCertificates.ID = ?";
 
     private static final String SQL_GET_CERTIFICATE_BY_NAME =
             "select * from GiftCertificates " +
-            "inner join CertificateDetails " +
+            "left join CertificateDetails " +
             "on GiftCertificates.ID = CertificateDetails.CertificateID " +
-            "and GiftCertificates.Name = ? " +
-            "inner join Tags " +
-            "on Tags.ID = CertificateDetails.TagID";
+            "left join Tags " +
+            "on Tags.ID = CertificateDetails.TagID " +
+            "where GiftCertificates.Name = ?";
 
     private static final String SQL_GET_ALL_CERTIFICATES =
             "select * from GiftCertificates " +
-            "inner join CertificateDetails " +
+            "left join CertificateDetails " +
             "on GiftCertificates.ID = CertificateDetails.CertificateID " +
-            "inner join Tags " +
-            "on Tags.ID = CertificateDetails.TagID";
+            "left join Tags " +
+            "on Tags.ID = CertificateDetails.TagID ";
 
     private static final String SQL_ADD_CERTIFICATE =
             "insert into GiftCertificates " +
             "(Name, Description, Price, CreateDate, LastUpdateDate, Duration) " +
             "values (?, ?, ?, ?, ?, ?)";
 
-    private static final String SQL_JOIN_TAG =
+    private static final String SQL_JOIN_CERTIFICATE_TO_TAG =
             "insert into CertificateDetails (TagID, CertificateID) values (?, ?)";
 
     private static final String SQL_DELETE_CERTIFICATE =
@@ -55,17 +58,23 @@ public class SQLGiftCertificateDaoImpl implements GiftCertificateDAO {
     private static final String SQL_DELETE_JOIN =
             "delete from CertificateDetails where (CertificateID = ?)";
 
+    private static final String SQL_UPDATE_CERTIFICATE =
+            "update GiftCertificates " +
+            "set Name = ?, Description = ?," +
+            "Price = ?, CreateDate = ?, LastUpdateDate = ?, Duration = ? " +
+            "where (ID = ?)";
+
     private final JdbcTemplate jdbcTemplate;
     private final ResultSetExtractor<List<GiftCertificate>> extractor;
-
-    @Autowired
-    private TagDao tagDao;
+    private final TagDao tagDao;
 
     @Autowired
     public SQLGiftCertificateDaoImpl(
-            JdbcTemplate jdbcTemplate, ResultSetExtractor<List<GiftCertificate>> extractor) {
+            JdbcTemplate jdbcTemplate, ResultSetExtractor<List<GiftCertificate>> extractor,
+            TagDao tagDao) {
         this.jdbcTemplate = jdbcTemplate;
         this.extractor = extractor;
+        this.tagDao = tagDao;
     }
 
     @Override
@@ -105,7 +114,7 @@ public class SQLGiftCertificateDaoImpl implements GiftCertificateDAO {
         addTagsToDB(giftCertificate.getTags());
 
         for (Tag tag : giftCertificate.getTags()) {
-            jdbcTemplate.update(SQL_JOIN_TAG, tag.getId(), id);
+            jdbcTemplate.update(SQL_JOIN_CERTIFICATE_TO_TAG, tag.getId(), id);
         }
 
         return id;
@@ -146,6 +155,45 @@ public class SQLGiftCertificateDaoImpl implements GiftCertificateDAO {
 
     @Override
     public boolean updateGiftCertificate(GiftCertificate giftCertificate) {
-        return false;
+        GiftCertificate previous = getGiftCertificate(giftCertificate.getId());
+
+        setNullFields(giftCertificate, previous);
+
+        jdbcTemplate.update(
+                SQL_UPDATE_CERTIFICATE, giftCertificate.getName(), giftCertificate.getDescription(),
+                giftCertificate.getPrice(), Timestamp.from(giftCertificate.getCreateDate().toInstant()),
+                Timestamp.from(ZonedDateTime.ofInstant(Instant.now(), ZoneOffset.UTC).toInstant()),
+                giftCertificate.getDuration(), giftCertificate.getId()
+        );
+
+        updateTags(giftCertificate, previous);
+
+        return true;
+    }
+
+    private void setNullFields(GiftCertificate giftCertificate, GiftCertificate previous) {
+        if (giftCertificate.getName() == null) {
+            giftCertificate.setName(previous.getName());
+        }
+        if (giftCertificate.getDescription() == null) {
+            giftCertificate.setDescription(previous.getDescription());
+        }
+        if (giftCertificate.getPrice() == 0) {
+            giftCertificate.setPrice(previous.getPrice());
+        }
+        if (giftCertificate.getCreateDate() == null) {
+            giftCertificate.setCreateDate(previous.getCreateDate());
+        }
+        if (giftCertificate.getDuration() == 0) {
+            giftCertificate.setDuration(previous.getDuration());
+        }
+    }
+
+    private void updateTags(GiftCertificate giftCertificate, GiftCertificate previous) {
+        for (Tag tag : giftCertificate.getTags()) {
+            if (!previous.getTags().contains(tag)) {
+                jdbcTemplate.update(SQL_JOIN_CERTIFICATE_TO_TAG, tag.getId(), giftCertificate.getId());
+            }
+        }
     }
 }

@@ -16,6 +16,9 @@ public class GiftCertificate {
     private int duration;
     private Set<Tag> tags = new HashSet<>();
 
+    public GiftCertificate() {
+    }
+
     public int getId() {
         return id;
     }

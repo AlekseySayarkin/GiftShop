@@ -22,7 +22,7 @@ public class SQLTagDaoImpTest {
     public void init() {
         DataSource dataSource = new EmbeddedDatabaseBuilder()
                 .setType(EmbeddedDatabaseType.H2)
-                .addScript("db/schema.sql")
+                .addScript("db/Tags.sql")
                 .build();
 
 

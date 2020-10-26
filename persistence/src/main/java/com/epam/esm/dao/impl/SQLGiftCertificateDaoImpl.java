@@ -159,7 +159,6 @@ public class SQLGiftCertificateDaoImpl implements GiftCertificateDAO {
     @Override
     public boolean updateGiftCertificate(GiftCertificate giftCertificate) {
         GiftCertificate certificateInDB = getGiftCertificate(giftCertificate.getId());
-
         getEmptyFields(giftCertificate, certificateInDB);
         updateTags(giftCertificate, certificateInDB);
 
@@ -184,18 +183,6 @@ public class SQLGiftCertificateDaoImpl implements GiftCertificateDAO {
         }
     }
 
-    private Object[] getParams(GiftCertificate giftCertificate) {
-        Object[] params = new Object[6];
-        params[0] = giftCertificate.getName();
-        params[1] = giftCertificate.getDescription();
-        params[2] = giftCertificate.getPrice();
-        params[3] = giftCertificate.getLastUpdateDate();
-        params[4] = giftCertificate.getDuration();
-        params[5] = giftCertificate.getId();
-
-        return params;
-    }
-
     private void updateTags(GiftCertificate giftCertificate, GiftCertificate certificateInDB) {
         List<Tag> existingTagsInDB = tagDao.getAllTags();
         for (Tag tag : giftCertificate.getTags()) {
@@ -206,5 +193,17 @@ public class SQLGiftCertificateDaoImpl implements GiftCertificateDAO {
                 jdbcTemplate.update(SQL_JOIN_CERTIFICATE_TO_TAG, tag.getId(), giftCertificate.getId());
             }
         }
+    }
+
+    private Object[] getParams(GiftCertificate giftCertificate) {
+        Object[] params = new Object[6];
+        params[0] = giftCertificate.getName();
+        params[1] = giftCertificate.getDescription();
+        params[2] = giftCertificate.getPrice();
+        params[3] = giftCertificate.getLastUpdateDate();
+        params[4] = giftCertificate.getDuration();
+        params[5] = giftCertificate.getId();
+
+        return params;
     }
 }

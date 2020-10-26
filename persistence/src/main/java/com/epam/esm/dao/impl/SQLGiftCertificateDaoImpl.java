@@ -12,11 +12,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
-import java.time.Instant;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.Set;
 
 @Repository
 public class SQLGiftCertificateDaoImpl implements GiftCertificateDAO {
@@ -61,7 +57,7 @@ public class SQLGiftCertificateDaoImpl implements GiftCertificateDAO {
     private static final String SQL_UPDATE_CERTIFICATE =
             "update GiftCertificates " +
             "set Name = ?, Description = ?," +
-            "Price = ?, CreateDate = ?, LastUpdateDate = ?, Duration = ? " +
+            "Price = ?, LastUpdateDate = ?, Duration = ? " +
             "where (ID = ?)";
 
     private static final String SQL_GET_CERTIFICATE_BY_TAG_NAME =
@@ -115,7 +111,7 @@ public class SQLGiftCertificateDaoImpl implements GiftCertificateDAO {
     }
 
     @Override
-    public List<GiftCertificate> getGiftCertificateByTAgName(String tagName) {
+    public List<GiftCertificate> getGiftCertificateByTagName(String tagName) {
         return jdbcTemplate.query(SQL_GET_CERTIFICATE_BY_TAG_NAME, extractor, tagName);
     }
 
@@ -126,9 +122,11 @@ public class SQLGiftCertificateDaoImpl implements GiftCertificateDAO {
             return 0;
         }
 
-        addNotExistingTagsToDB(giftCertificate.getTags());
-
+        List<Tag> existingTags = tagDao.getAllTags();
         for (Tag tag : giftCertificate.getTags()) {
+            if (!existingTags.contains(tag)) {
+                tag.setId(tagDao.addTag(tag));
+            }
             jdbcTemplate.update(SQL_JOIN_CERTIFICATE_TO_TAG, tag.getId(), id);
         }
 
@@ -151,16 +149,6 @@ public class SQLGiftCertificateDaoImpl implements GiftCertificateDAO {
         return holder.getKey() == null ? 0 : holder.getKey().intValue();
     }
 
-    private void addNotExistingTagsToDB(Set<Tag> tags) {
-        List<Tag> existingTags = tagDao.getAllTags();
-
-        for (Tag tag : tags) {
-            if (!existingTags.contains(tag)) {
-                tag.setId(tagDao.addTag(tag));
-            }
-        }
-    }
-
     @Override
     public boolean deleteGiftCertificate(GiftCertificate giftCertificate) {
         jdbcTemplate.update(SQL_DELETE_JOIN, giftCertificate.getId());
@@ -170,45 +158,51 @@ public class SQLGiftCertificateDaoImpl implements GiftCertificateDAO {
 
     @Override
     public boolean updateGiftCertificate(GiftCertificate giftCertificate) {
-        GiftCertificate previous = getGiftCertificate(giftCertificate.getId());
+        GiftCertificate certificateInDB = getGiftCertificate(giftCertificate.getId());
 
-        setNullFields(giftCertificate, previous);
+        getEmptyFields(giftCertificate, certificateInDB);
+        updateTags(giftCertificate, certificateInDB);
 
-        jdbcTemplate.update(
-                SQL_UPDATE_CERTIFICATE, giftCertificate.getName(), giftCertificate.getDescription(),
-                giftCertificate.getPrice(), Timestamp.from(giftCertificate.getCreateDate().toInstant()),
-                Timestamp.from(ZonedDateTime.ofInstant(Instant.now(), ZoneOffset.UTC).toInstant()),
-                giftCertificate.getDuration(), giftCertificate.getId()
-        );
-
-        updateTags(giftCertificate, previous);
-
-        return true;
+        return jdbcTemplate.update(SQL_UPDATE_CERTIFICATE, getParams(giftCertificate)) == 1;
     }
 
-    private void setNullFields(GiftCertificate giftCertificate, GiftCertificate previous) {
+    private void getEmptyFields(GiftCertificate giftCertificate, GiftCertificate certificateInDB) {
         if (giftCertificate.getName() == null) {
-            giftCertificate.setName(previous.getName());
+            giftCertificate.setName(certificateInDB.getName());
         }
         if (giftCertificate.getDescription() == null) {
-            giftCertificate.setDescription(previous.getDescription());
+            giftCertificate.setDescription(certificateInDB.getDescription());
         }
         if (giftCertificate.getPrice() == 0) {
-            giftCertificate.setPrice(previous.getPrice());
+            giftCertificate.setPrice(certificateInDB.getPrice());
         }
         if (giftCertificate.getCreateDate() == null) {
-            giftCertificate.setCreateDate(previous.getCreateDate());
+            giftCertificate.setCreateDate(certificateInDB.getCreateDate());
         }
         if (giftCertificate.getDuration() == 0) {
-            giftCertificate.setDuration(previous.getDuration());
+            giftCertificate.setDuration(certificateInDB.getDuration());
         }
     }
 
-    private void updateTags(GiftCertificate giftCertificate, GiftCertificate previous) {
-        addNotExistingTagsToDB(giftCertificate.getTags());
+    private Object[] getParams(GiftCertificate giftCertificate) {
+        Object[] params = new Object[6];
+        params[0] = giftCertificate.getName();
+        params[1] = giftCertificate.getDescription();
+        params[2] = giftCertificate.getPrice();
+        params[3] = giftCertificate.getLastUpdateDate();
+        params[4] = giftCertificate.getDuration();
+        params[5] = giftCertificate.getId();
 
+        return params;
+    }
+
+    private void updateTags(GiftCertificate giftCertificate, GiftCertificate certificateInDB) {
+        List<Tag> existingTagsInDB = tagDao.getAllTags();
         for (Tag tag : giftCertificate.getTags()) {
-            if (!previous.getTags().contains(tag)) {
+            if (!existingTagsInDB.contains(tag)) {
+                tag.setId(tagDao.addTag(tag));
+            }
+            if (!certificateInDB.getTags().contains(tag)) {
                 jdbcTemplate.update(SQL_JOIN_CERTIFICATE_TO_TAG, tag.getId(), giftCertificate.getId());
             }
         }

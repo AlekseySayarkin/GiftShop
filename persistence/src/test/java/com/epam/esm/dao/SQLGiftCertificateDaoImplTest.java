@@ -86,8 +86,8 @@ public class SQLGiftCertificateDaoImplTest {
             list.add(certificate);
         }
 
-        Assert.assertEquals(list, giftCertificateDAO.getGiftCertificateByTAgName("relax"));
-        Assert.assertNotEquals(list, giftCertificateDAO.getGiftCertificateByTAgName("spa"));
+        Assert.assertEquals(list, giftCertificateDAO.getGiftCertificateByTagName("relax"));
+        Assert.assertNotEquals(list, giftCertificateDAO.getGiftCertificateByTagName("spa"));
     }
 
     @Test
@@ -127,17 +127,15 @@ public class SQLGiftCertificateDaoImplTest {
         toUpdate.setName("new name");
         toUpdate.setDescription("new description");
         toUpdate.setPrice(199.99);
-        toUpdate.setCreateDate(ZonedDateTime.ofInstant(Instant.now(), ZoneOffset.UTC));
         toUpdate.setDuration(99);
         toUpdate.getTags().add(tagDao.getTagByName("spa"));
 
-        giftCertificateDAO.updateGiftCertificate(toUpdate);
+        Assert.assertTrue(giftCertificateDAO.updateGiftCertificate(toUpdate));
         GiftCertificate updated = giftCertificateDAO.getGiftCertificate(toUpdate.getId());
 
         Assert.assertEquals(toUpdate.getId(), updated.getId());
         Assert.assertEquals(toUpdate.getName(), updated.getName());
         Assert.assertEquals(toUpdate.getPrice(), updated.getPrice(), 0);
-        Assert.assertEquals(toUpdate.getCreateDate(), updated.getCreateDate());
         Assert.assertEquals(toUpdate.getDuration(), updated.getDuration());
         Assert.assertEquals(toUpdate.getTags(), updated.getTags());
     }

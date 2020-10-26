@@ -64,6 +64,16 @@ public class SQLGiftCertificateDaoImpl implements GiftCertificateDAO {
             "Price = ?, CreateDate = ?, LastUpdateDate = ?, Duration = ? " +
             "where (ID = ?)";
 
+    private static final String SQL_GET_CERTIFICATE_BY_TAG_NAME =
+            "select * from GiftCertificates " +
+            "join CertificateDetails on GiftCertificates.ID = CertificateDetails.CertificateID " +
+            "join Tags on Tags.ID = CertificateDetails.TagID " +
+            "where exists (" +
+            "select CertificateDetails.CertificateID from CertificateDetails " +
+            "join Tags on Tags.ID = CertificateDetails.TagID " +
+            "where Tags.name = ? and CertificateDetails.CertificateID = GiftCertificates.ID " +
+            ")";
+
     private final JdbcTemplate jdbcTemplate;
     private final ResultSetExtractor<List<GiftCertificate>> extractor;
     private final TagDao tagDao;
@@ -105,13 +115,18 @@ public class SQLGiftCertificateDaoImpl implements GiftCertificateDAO {
     }
 
     @Override
+    public List<GiftCertificate> getGiftCertificateByTAgName(String tagName) {
+        return jdbcTemplate.query(SQL_GET_CERTIFICATE_BY_TAG_NAME, extractor, tagName);
+    }
+
+    @Override
     public int addGiftCertificate(GiftCertificate giftCertificate) {
         int id = addGiftCertificateToDB(giftCertificate);
         if (id == 0) {
             return 0;
         }
 
-        addTagsToDB(giftCertificate.getTags());
+        addNotExistingTagsToDB(giftCertificate.getTags());
 
         for (Tag tag : giftCertificate.getTags()) {
             jdbcTemplate.update(SQL_JOIN_CERTIFICATE_TO_TAG, tag.getId(), id);
@@ -136,7 +151,7 @@ public class SQLGiftCertificateDaoImpl implements GiftCertificateDAO {
         return holder.getKey() == null ? 0 : holder.getKey().intValue();
     }
 
-    private void addTagsToDB(Set<Tag> tags) {
+    private void addNotExistingTagsToDB(Set<Tag> tags) {
         List<Tag> existingTags = tagDao.getAllTags();
 
         for (Tag tag : tags) {
@@ -190,6 +205,8 @@ public class SQLGiftCertificateDaoImpl implements GiftCertificateDAO {
     }
 
     private void updateTags(GiftCertificate giftCertificate, GiftCertificate previous) {
+        addNotExistingTagsToDB(giftCertificate.getTags());
+
         for (Tag tag : giftCertificate.getTags()) {
             if (!previous.getTags().contains(tag)) {
                 jdbcTemplate.update(SQL_JOIN_CERTIFICATE_TO_TAG, tag.getId(), giftCertificate.getId());

@@ -9,6 +9,7 @@ public interface GiftCertificateDAO {
     GiftCertificate getGiftCertificate(String name);
     GiftCertificate getGiftCertificate(int id);
     List<GiftCertificate> getAllGiftCertificates();
+    List<GiftCertificate> getGiftCertificateByTAgName(String tagName);
 
     int addGiftCertificate(GiftCertificate giftCertificate);
     boolean deleteGiftCertificate(GiftCertificate giftCertificate);

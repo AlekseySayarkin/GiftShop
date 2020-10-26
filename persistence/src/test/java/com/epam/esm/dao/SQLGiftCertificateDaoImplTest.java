@@ -76,6 +76,21 @@ public class SQLGiftCertificateDaoImplTest {
     }
 
     @Test
+    public void whenAddGiftCertificate_thenCorrectlyReturnsItByTagNAme() {
+        List<GiftCertificate> list = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            GiftCertificate certificate = initCertificate();
+            certificate.setName("name" + i);
+
+            certificate.setId(giftCertificateDAO.addGiftCertificate(certificate));
+            list.add(certificate);
+        }
+
+        Assert.assertEquals(list, giftCertificateDAO.getGiftCertificateByTAgName("relax"));
+        Assert.assertNotEquals(list, giftCertificateDAO.getGiftCertificateByTAgName("spa"));
+    }
+
+    @Test
     public void whenAddGiftCertificate_thenCorrectlyDeletesIt() {
         GiftCertificate added = initCertificate();
 

@@ -40,17 +40,16 @@ public class GiftCertificateExtractor implements ResultSetExtractor<List<GiftCer
         while (rs.next()) {
             GiftCertificate giftCertificate = map.get(rs.getInt(1));
             if (giftCertificate == null) {
-                giftCertificate = initGiftCertificate(rs);
+                giftCertificate = getGiftCertificateFromResultSet(rs);
                 map.put(giftCertificate.getId(), giftCertificate);
             }
 
-            initTags(rs, giftCertificate);
+            setTagsFromResultSet(rs, giftCertificate);
         }
-
         return new ArrayList<>(map.values());
     }
 
-    private GiftCertificate initGiftCertificate(ResultSet rs) throws SQLException {
+    private GiftCertificate getGiftCertificateFromResultSet(ResultSet rs) throws SQLException {
         GiftCertificate giftCertificate = new GiftCertificate();
 
         giftCertificate.setId(rs.getInt(CERTIFICATE_ID_COLUMN));
@@ -74,7 +73,7 @@ public class GiftCertificateExtractor implements ResultSetExtractor<List<GiftCer
         return giftCertificate;
     }
 
-    private void initTags(ResultSet rs, GiftCertificate giftCertificate) throws SQLException {
+    private void setTagsFromResultSet(ResultSet rs, GiftCertificate giftCertificate) throws SQLException {
         Tag tag = new Tag(rs.getInt(TAG_ID_COLUMN), rs.getString(TAG_NAME_COLUMN));
         if (tag.getId() != 0 && tag.getName() != null) {
             giftCertificate.getTags().add(tag);

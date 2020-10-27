@@ -9,12 +9,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.util.List;
 
-@Repository
 public class SQLGiftCertificateDaoImpl implements GiftCertificateDAO {
 
     private static final String SQL_GET_CERTIFICATE_BY_ID =
@@ -88,7 +86,7 @@ public class SQLGiftCertificateDaoImpl implements GiftCertificateDAO {
         List<GiftCertificate> result = jdbcTemplate.query(SQL_GET_CERTIFICATE_BY_NAME, extractor, name);
 
         if (result == null || result.isEmpty()) {
-            return null; //todo ask whether returning null is ok
+            return null;
         }
 
         return result.get(0);
@@ -99,7 +97,7 @@ public class SQLGiftCertificateDaoImpl implements GiftCertificateDAO {
         List<GiftCertificate> result = jdbcTemplate.query(SQL_GET_CERTIFICATE_BY_ID, extractor, id);
 
         if (result == null || result.isEmpty()) {
-            return null; //todo ask whether returning null is ok
+            return null;
         }
 
         return result.get(0);
@@ -118,9 +116,6 @@ public class SQLGiftCertificateDaoImpl implements GiftCertificateDAO {
     @Override
     public int addGiftCertificate(GiftCertificate giftCertificate) {
         int id = addGiftCertificateToDB(giftCertificate);
-        if (id == 0) {
-            return 0;
-        }
 
         List<Tag> existingTags = tagDao.getAllTags();
         for (Tag tag : giftCertificate.getTags()) {

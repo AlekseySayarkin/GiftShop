@@ -3,7 +3,6 @@ package com.epam.esm.dao.extractor;
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.model.Tag;
 import org.springframework.jdbc.core.ResultSetExtractor;
-import org.springframework.stereotype.Component;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -15,7 +14,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-@Component
 public class GiftCertificateExtractor implements ResultSetExtractor<List<GiftCertificate>> {
 
     private static final String CERTIFICATE_ID_COLUMN = "ID";

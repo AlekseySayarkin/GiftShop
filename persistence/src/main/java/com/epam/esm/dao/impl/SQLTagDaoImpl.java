@@ -7,12 +7,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Repository;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.List;
 
-@Repository
 public class SQLTagDaoImpl implements TagDao {
 
     private static final String SQL_GET_ALL_TAGS = "select Id, Name from Tags";

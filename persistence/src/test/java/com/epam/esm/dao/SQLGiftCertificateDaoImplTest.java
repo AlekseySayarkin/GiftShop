@@ -17,10 +17,7 @@ import javax.sql.DataSource;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class SQLGiftCertificateDaoImplTest {
 
@@ -138,5 +135,70 @@ public class SQLGiftCertificateDaoImplTest {
         Assert.assertEquals(toUpdate.getPrice(), updated.getPrice(), 0);
         Assert.assertEquals(toUpdate.getDuration(), updated.getDuration());
         Assert.assertEquals(toUpdate.getTags(), updated.getTags());
+    }
+
+    @Test
+    public void correctlyReturnSortedByDateCertificates() {
+        List<GiftCertificate> giftCertificates = new ArrayList<>();
+
+        for (int i = 1; i <= 30; i++) {
+            GiftCertificate certificate = initCertificate();
+            certificate.setName("Certificate" + i);
+            certificate.setId(giftCertificateDAO.addGiftCertificate(certificate));
+            giftCertificates.add(certificate);
+        }
+
+        Assert.assertEquals(
+                giftCertificates, giftCertificateDAO.getAllGiftCertificatesSortedByDate(true));
+        Assert.assertNotEquals(
+                giftCertificates, giftCertificateDAO.getAllGiftCertificatesSortedByDate(false));
+
+        Collections.reverse(giftCertificates);
+        Assert.assertEquals(
+                giftCertificates, giftCertificateDAO.getAllGiftCertificatesSortedByDate(false));
+    }
+
+    @Test
+    public void correctlyReturnSortedByNameCertificates() {
+        List<GiftCertificate> giftCertificates = new ArrayList<>();
+
+        for (int i = 96; i <= 122; i++) {
+            GiftCertificate certificate = initCertificate();
+            certificate.setName("Certificate" + (char) i);
+            certificate.setId(giftCertificateDAO.addGiftCertificate(certificate));
+            giftCertificates.add(certificate);
+        }
+
+        Assert.assertEquals(
+                giftCertificates, giftCertificateDAO.getAllGiftCertificatesSortedByName(true));
+        Assert.assertNotEquals(
+                giftCertificates, giftCertificateDAO.getAllGiftCertificatesSortedByName(false));
+
+        Collections.reverse(giftCertificates);
+        Assert.assertEquals(
+                giftCertificates, giftCertificateDAO.getAllGiftCertificatesSortedByName(false));
+    }
+
+    @Test
+    public void correctlyReturnCertificatesByContent() {
+        for (int i = 0; i < 10; i++) {
+            GiftCertificate certificate = initCertificate();
+            certificate.setName("Certificate" + (char) i + " Additional Info");
+            certificate.setId(giftCertificateDAO.addGiftCertificate(certificate));
+            Assert.assertEquals(certificate,
+                    giftCertificateDAO.getAllGiftCertificates("Certificate" + (char) i).get(0));
+            Assert.assertEquals(0,
+                    giftCertificateDAO.getAllGiftCertificates("New content" + (char) i).size());
+        }
+
+        for (int i = 0; i < 10; i++) {
+            GiftCertificate certificate = initCertificate();
+            certificate.setDescription("Description" + (char) i + " Additional Info");
+            certificate.setId(giftCertificateDAO.addGiftCertificate(certificate));
+            Assert.assertEquals(certificate,
+                    giftCertificateDAO.getAllGiftCertificates("Description" + (char) i).get(0));
+            Assert.assertEquals(0,
+                    giftCertificateDAO.getAllGiftCertificates("New content" + (char) i).size());
+        }
     }
 }

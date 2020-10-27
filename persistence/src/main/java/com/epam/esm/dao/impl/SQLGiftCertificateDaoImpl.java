@@ -11,6 +11,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class SQLGiftCertificateDaoImpl implements GiftCertificateDAO {
@@ -85,22 +86,14 @@ public class SQLGiftCertificateDaoImpl implements GiftCertificateDAO {
     public GiftCertificate getGiftCertificate(String name) {
         List<GiftCertificate> result = jdbcTemplate.query(SQL_GET_CERTIFICATE_BY_NAME, extractor, name);
 
-        if (result == null || result.isEmpty()) {
-            return null;
-        }
-
-        return result.get(0);
+        return result == null || result.isEmpty() ? null : result.get(0);
     }
 
     @Override
     public GiftCertificate getGiftCertificate(int id) {
         List<GiftCertificate> result = jdbcTemplate.query(SQL_GET_CERTIFICATE_BY_ID, extractor, id);
 
-        if (result == null || result.isEmpty()) {
-            return null;
-        }
-
-        return result.get(0);
+        return result == null || result.isEmpty() ? null : result.get(0);
     }
 
     @Override
@@ -109,8 +102,40 @@ public class SQLGiftCertificateDaoImpl implements GiftCertificateDAO {
     }
 
     @Override
+    public List<GiftCertificate> getAllGiftCertificates(String content) {
+        List<GiftCertificate> certificatesInDB = getAllGiftCertificates();
+
+        List<GiftCertificate> result = new ArrayList<>();
+        for (GiftCertificate giftCertificate: certificatesInDB) {
+            if (giftCertificate.getName().contains(content) ||
+                    giftCertificate.getDescription().contains(content)) {
+                result.add(giftCertificate);
+            }
+        }
+
+        return result;
+    }
+
+    @Override
     public List<GiftCertificate> getGiftCertificateByTagName(String tagName) {
         return jdbcTemplate.query(SQL_GET_CERTIFICATE_BY_TAG_NAME, extractor, tagName);
+    }
+
+    @Override
+    public List<GiftCertificate> getAllGiftCertificatesSortedByName(boolean isAscending) {
+        return getAllGiftCertificatesSortedByParameter("Name", isAscending);
+    }
+
+    @Override
+    public List<GiftCertificate> getAllGiftCertificatesSortedByDate(boolean isAscending) {
+        return getAllGiftCertificatesSortedByParameter("CreateDate", isAscending);
+    }
+
+    private List<GiftCertificate> getAllGiftCertificatesSortedByParameter(
+            String parameter, boolean isAscending) {
+        String sql = SQL_GET_ALL_CERTIFICATES + "order by " + parameter + " ";
+        sql += isAscending ? "ASC" : "DESC";
+        return jdbcTemplate.query(sql, extractor);
     }
 
     @Override
@@ -141,7 +166,7 @@ public class SQLGiftCertificateDaoImpl implements GiftCertificateDAO {
             return ps;
         }, holder);
 
-        return holder.getKey() == null ? 0 : holder.getKey().intValue();
+        return holder.getKey() == null ? -1 : holder.getKey().intValue();
     }
 
     @Override

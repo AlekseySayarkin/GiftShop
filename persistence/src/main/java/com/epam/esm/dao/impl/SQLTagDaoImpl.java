@@ -52,7 +52,7 @@ public class SQLTagDaoImpl implements TagDao {
             return ps;
         }, holder);
 
-        return holder.getKey() == null ? 0 : holder.getKey().intValue();
+        return holder.getKey() == null ? -1 : holder.getKey().intValue();
     }
 
     @Override

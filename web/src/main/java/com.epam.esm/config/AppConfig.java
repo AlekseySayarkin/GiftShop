@@ -1,9 +1,9 @@
 package com.epam.esm.config;
 
-import com.epam.esm.dao.TagDao;
 import com.epam.esm.dao.impl.SQLGiftCertificateDaoImpl;
 import com.epam.esm.dao.impl.SQLTagDaoImpl;
 import com.epam.esm.dao.extractor.GiftCertificateExtractor;
+import com.epam.esm.dao.mapper.GiftCertificateMapper;
 import com.epam.esm.dao.mapper.TagRowMapper;
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.model.Tag;
@@ -67,9 +67,14 @@ public class AppConfig {
     }
 
     @Bean
+    public RowMapper<GiftCertificate> giftCertificateMapper() {
+        return new GiftCertificateMapper();
+    }
+
+    @Bean
     public SQLGiftCertificateDaoImpl giftCertificateDao(
-            JdbcTemplate jdbcTemplate,
-            ResultSetExtractor<List<GiftCertificate>> giftCertificateExtractor, TagDao tagDao) {
-        return new SQLGiftCertificateDaoImpl(jdbcTemplate, giftCertificateExtractor, tagDao);
+            JdbcTemplate jdbcTemplate, ResultSetExtractor<List<GiftCertificate>> giftCertificateExtractor,
+            RowMapper<GiftCertificate> mapper) {
+        return new SQLGiftCertificateDaoImpl(jdbcTemplate, giftCertificateExtractor, mapper);
     }
 }

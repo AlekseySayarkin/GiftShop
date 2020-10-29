@@ -1,8 +1,10 @@
 package com.epam.esm.dao;
 
+import com.epam.esm.dao.exception.PersistenceException;
 import com.epam.esm.dao.extractor.GiftCertificateExtractor;
 import com.epam.esm.dao.impl.SQLGiftCertificateDaoImpl;
 import com.epam.esm.dao.impl.SQLTagDaoImpl;
+import com.epam.esm.dao.mapper.GiftCertificateMapper;
 import com.epam.esm.dao.mapper.TagRowMapper;
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.model.Tag;
@@ -25,7 +27,7 @@ public class SQLGiftCertificateDaoImplTest {
     private TagDao tagDao;
 
     @Before
-    public void init() {
+    public void init() throws PersistenceException {
         DataSource dataSource = new EmbeddedDatabaseBuilder()
                 .setType(EmbeddedDatabaseType.H2)
                 .addScript("db/ClearTables.sql")
@@ -38,7 +40,7 @@ public class SQLGiftCertificateDaoImplTest {
 
         tagDao = new SQLTagDaoImpl(jdbcTemplate, new TagRowMapper());
         giftCertificateDAO = new SQLGiftCertificateDaoImpl(
-                jdbcTemplate, new GiftCertificateExtractor(), tagDao);
+                jdbcTemplate, new GiftCertificateExtractor(), new GiftCertificateMapper());
 
         tagDao.addTag(new Tag("spa"));
         tagDao.addTag(new Tag("relax"));
@@ -63,23 +65,28 @@ public class SQLGiftCertificateDaoImplTest {
     }
 
     @Test
-    public void whenAddGiftCertificate_thenCorrectlyReturnsIt() {
+    public void whenAddGiftCertificate_thenCorrectlyReturnsIt() throws PersistenceException {
         GiftCertificate added = initCertificate();
-
         added.setId(giftCertificateDAO.addGiftCertificate(added));
+
+        giftCertificateDAO.createJoin(added.getId(), tagDao.getTagByName("tourism").getId());
+        giftCertificateDAO.createJoin(added.getId(), tagDao.getTagByName("relax").getId());
 
         Assert.assertEquals(added, giftCertificateDAO.getGiftCertificate(added.getName()));
         Assert.assertEquals(added, giftCertificateDAO.getGiftCertificate(added.getId()));
     }
 
     @Test
-    public void whenAddGiftCertificate_thenCorrectlyReturnsItByTagNAme() {
+    public void whenAddGiftCertificate_thenCorrectlyReturnsItByTagNAme() throws PersistenceException {
         List<GiftCertificate> list = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             GiftCertificate certificate = initCertificate();
             certificate.setName("name" + i);
 
             certificate.setId(giftCertificateDAO.addGiftCertificate(certificate));
+            giftCertificateDAO.createJoin(certificate.getId(), tagDao.getTagByName("tourism").getId());
+            giftCertificateDAO.createJoin(certificate.getId(), tagDao.getTagByName("relax").getId());
+
             list.add(certificate);
         }
 
@@ -88,16 +95,22 @@ public class SQLGiftCertificateDaoImplTest {
     }
 
     @Test
-    public void whenAddGiftCertificate_thenCorrectlyDeletesIt() {
+    public void whenAddGiftCertificate_thenCorrectlyDeletesIt() throws PersistenceException {
         GiftCertificate added = initCertificate();
 
         added.setId(giftCertificateDAO.addGiftCertificate(added));
+
+        giftCertificateDAO.createJoin(added.getId(), tagDao.getTagByName("tourism").getId());
+        giftCertificateDAO.createJoin(added.getId(), tagDao.getTagByName("relax").getId());
+
+        giftCertificateDAO.deleteJoin(added.getId(), tagDao.getTagByName("tourism").getId());
+        giftCertificateDAO.deleteJoin(added.getId(), tagDao.getTagByName("relax").getId());
 
         Assert.assertTrue(giftCertificateDAO.deleteGiftCertificate(added));
     }
 
     @Test
-    public void whenAddGiftCertificates_thenCorrectlyReturnsThemAll() {
+    public void whenAddGiftCertificates_thenCorrectlyReturnsThemAll() throws PersistenceException {
         List<GiftCertificate> certificates = new ArrayList<>();
 
         for (int i = 0; i < 10; i++) {
@@ -108,16 +121,22 @@ public class SQLGiftCertificateDaoImplTest {
             certificate.setCreateDate(ZonedDateTime.ofInstant(Instant.now(), ZoneOffset.UTC));
             certificate.setLastUpdateDate( ZonedDateTime.ofInstant(Instant.now(), ZoneOffset.UTC));
             certificate.setDuration(i);
-            certificates.add(certificate);
             certificate.setTags(new HashSet<>(tagDao.getAllTags()));
+
             certificate.setId(giftCertificateDAO.addGiftCertificate(certificate));
+
+            for (Tag tag: certificate.getTags()) {
+                giftCertificateDAO.createJoin(certificate.getId(), tag.getId());
+            }
+
+            certificates.add(certificate);
         }
 
         Assert.assertEquals(certificates, giftCertificateDAO.getAllGiftCertificates());
     }
 
     @Test
-    public void correctlyUpdateGiftCertificate() {
+    public void correctlyUpdateGiftCertificate() throws PersistenceException {
         GiftCertificate toUpdate = initCertificate();
         toUpdate.setId(giftCertificateDAO.addGiftCertificate(toUpdate));
 
@@ -126,6 +145,10 @@ public class SQLGiftCertificateDaoImplTest {
         toUpdate.setPrice(199.99);
         toUpdate.setDuration(99);
         toUpdate.getTags().add(tagDao.getTagByName("spa"));
+
+        giftCertificateDAO.createJoin(toUpdate.getId(), tagDao.getTagByName("tourism").getId());
+        giftCertificateDAO.createJoin(toUpdate.getId(), tagDao.getTagByName("relax").getId());
+        giftCertificateDAO.createJoin(toUpdate.getId(), tagDao.getTagByName("spa").getId());
 
         Assert.assertTrue(giftCertificateDAO.updateGiftCertificate(toUpdate));
         GiftCertificate updated = giftCertificateDAO.getGiftCertificate(toUpdate.getId());
@@ -138,13 +161,15 @@ public class SQLGiftCertificateDaoImplTest {
     }
 
     @Test
-    public void correctlyReturnSortedByDateCertificates() {
+    public void correctlyReturnSortedByDateCertificates() throws PersistenceException {
         List<GiftCertificate> giftCertificates = new ArrayList<>();
 
         for (int i = 1; i <= 30; i++) {
             GiftCertificate certificate = initCertificate();
             certificate.setName("Certificate" + i);
             certificate.setId(giftCertificateDAO.addGiftCertificate(certificate));
+            giftCertificateDAO.createJoin(certificate.getId(), tagDao.getTagByName("tourism").getId());
+            giftCertificateDAO.createJoin(certificate.getId(), tagDao.getTagByName("relax").getId());
             giftCertificates.add(certificate);
         }
 
@@ -159,13 +184,18 @@ public class SQLGiftCertificateDaoImplTest {
     }
 
     @Test
-    public void correctlyReturnSortedByNameCertificates() {
+    public void correctlyReturnSortedByNameCertificates() throws PersistenceException {
         List<GiftCertificate> giftCertificates = new ArrayList<>();
 
         for (int i = 96; i <= 122; i++) {
             GiftCertificate certificate = initCertificate();
             certificate.setName("Certificate" + (char) i);
+
             certificate.setId(giftCertificateDAO.addGiftCertificate(certificate));
+
+            giftCertificateDAO.createJoin(certificate.getId(), tagDao.getTagByName("tourism").getId());
+            giftCertificateDAO.createJoin(certificate.getId(), tagDao.getTagByName("relax").getId());
+
             giftCertificates.add(certificate);
         }
 
@@ -180,11 +210,16 @@ public class SQLGiftCertificateDaoImplTest {
     }
 
     @Test
-    public void correctlyReturnCertificatesByContent() {
+    public void correctlyReturnCertificatesByContent() throws PersistenceException {
         for (int i = 0; i < 10; i++) {
             GiftCertificate certificate = initCertificate();
             certificate.setName("Certificate" + (char) i + " Additional Info");
+
+
             certificate.setId(giftCertificateDAO.addGiftCertificate(certificate));
+            giftCertificateDAO.createJoin(certificate.getId(), tagDao.getTagByName("tourism").getId());
+            giftCertificateDAO.createJoin(certificate.getId(), tagDao.getTagByName("relax").getId());
+
             Assert.assertEquals(certificate,
                     giftCertificateDAO.getAllGiftCertificates("Certificate" + (char) i).get(0));
             Assert.assertEquals(0,
@@ -194,7 +229,11 @@ public class SQLGiftCertificateDaoImplTest {
         for (int i = 0; i < 10; i++) {
             GiftCertificate certificate = initCertificate();
             certificate.setDescription("Description" + (char) i + " Additional Info");
+
             certificate.setId(giftCertificateDAO.addGiftCertificate(certificate));
+            giftCertificateDAO.createJoin(certificate.getId(), tagDao.getTagByName("tourism").getId());
+            giftCertificateDAO.createJoin(certificate.getId(), tagDao.getTagByName("relax").getId());
+
             Assert.assertEquals(certificate,
                     giftCertificateDAO.getAllGiftCertificates("Description" + (char) i).get(0));
             Assert.assertEquals(0,

@@ -1,5 +1,6 @@
 package com.epam.esm.dao;
 
+import com.epam.esm.dao.exception.PersistenceException;
 import com.epam.esm.model.GiftCertificate;
 
 import java.util.List;
@@ -14,7 +15,10 @@ public interface GiftCertificateDAO {
     List<GiftCertificate> getAllGiftCertificatesSortedByName(boolean isAscending);
     List<GiftCertificate> getAllGiftCertificatesSortedByDate(boolean isAscending);
 
-    int addGiftCertificate(GiftCertificate giftCertificate);
+    int addGiftCertificate(GiftCertificate giftCertificate) throws PersistenceException;
     boolean deleteGiftCertificate(GiftCertificate giftCertificate);
-    boolean updateGiftCertificate(GiftCertificate giftCertificate);
+    boolean updateGiftCertificate(GiftCertificate giftCertificate) throws PersistenceException;
+
+    boolean createJoin(int certificateId, int tagId);
+    boolean deleteJoin(int certificateId, int tagId);
 }

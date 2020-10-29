@@ -1,6 +1,7 @@
 package com.epam.esm.dao.impl;
 
 import com.epam.esm.dao.TagDao;
+import com.epam.esm.dao.exception.PersistenceException;
 import com.epam.esm.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -44,7 +45,7 @@ public class SQLTagDaoImpl implements TagDao {
     }
 
     @Override
-    public int addTag(Tag tag) {
+    public int addTag(Tag tag) throws PersistenceException {
         KeyHolder holder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(SQL_ADD_TAG, Statement.RETURN_GENERATED_KEYS);
@@ -52,7 +53,11 @@ public class SQLTagDaoImpl implements TagDao {
             return ps;
         }, holder);
 
-        return holder.getKey() == null ? -1 : holder.getKey().intValue();
+        if (holder.getKey() == null) {
+            throw new PersistenceException("Failed to add Tag");
+        }
+
+        return holder.getKey().intValue();
     }
 
     @Override

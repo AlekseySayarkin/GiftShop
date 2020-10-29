@@ -1,5 +1,6 @@
 package com.epam.esm.dao;
 
+import com.epam.esm.dao.exception.PersistenceException;
 import com.epam.esm.dao.impl.SQLTagDaoImpl;
 import com.epam.esm.dao.mapper.TagRowMapper;
 import com.epam.esm.model.Tag;
@@ -22,6 +23,7 @@ public class SQLTagDaoImpTest {
     public void init() {
         DataSource dataSource = new EmbeddedDatabaseBuilder()
                 .setType(EmbeddedDatabaseType.H2)
+                .addScripts("db/ClearTables.sql")
                 .addScript("db/Tags.sql")
                 .build();
 
@@ -30,38 +32,54 @@ public class SQLTagDaoImpTest {
     }
 
     @Test
+    public void whenAddTag_thenCorrectlyReturnIt() {
+        try {
+            Tag tagToReturn = new Tag("Tag to return");
+            tagToReturn.setId(tagDao.addTag(tagToReturn));
+
+            Assert.assertEquals(tagToReturn, tagDao.getTagById(tagToReturn.getId()));
+            Assert.assertEquals(tagToReturn, tagDao.getTagByName(tagToReturn.getName()));
+        } catch (PersistenceException e) {
+            Assert.fail();
+        }
+    }
+
+    @Test
     public void whenAddTag_thenCorrectlyDeleteId() {
-        Tag tagToDelete = new Tag(1, "Tag to return");
-        tagDao.addTag(tagToDelete);
-        Assert.assertTrue(tagDao.deleteTag(tagToDelete));
+        try {
+            Tag tagToDelete = new Tag("Tag to return");
+            tagToDelete.setId(tagDao.addTag(tagToDelete));
+            Assert.assertTrue(tagDao.deleteTag(tagToDelete));
+        } catch (PersistenceException e) {
+            Assert.fail();
+        }
     }
 
     @Test
     public void whenAddTag_thenReturnNonZeroId() {
-        Tag tagToAdd = new Tag(1, "Tag to add");
-        Assert.assertNotEquals(0, tagDao.addTag(tagToAdd));
-
-    }
-
-    @Test
-    public void whenAddTag_thenCorrectlyReturnIt() {
-        Tag tagToReturn = new Tag(1, "Tag to return");
-        tagDao.addTag(tagToReturn);
-        Assert.assertEquals(tagToReturn, tagDao.getTagById(tagToReturn.getId()));
-        Assert.assertEquals(tagToReturn, tagDao.getTagByName(tagToReturn.getName()));
+        try {
+            Tag tagToAdd = new Tag("Tag to add");
+            Assert.assertNotEquals(0, tagDao.addTag(tagToAdd));
+        } catch (PersistenceException e) {
+            Assert.fail();
+        }
     }
 
     @Test
     public void whenAddTags_thenCorrectlyReturnsIt() {
-        List<Tag> tagsToReturn = new ArrayList<>();
-        tagsToReturn.add(new Tag(1, "Tag one"));
-        tagsToReturn.add(new Tag(2, "Tag two"));
-        tagsToReturn.add(new Tag(3, "Tag three"));
+        try {
+            List<Tag> tagsToReturn = new ArrayList<>();
+            tagsToReturn.add(new Tag("Tag one"));
+            tagsToReturn.add(new Tag("Tag two"));
+            tagsToReturn.add(new Tag("Tag three"));
 
-        for (Tag tag: tagsToReturn) {
-            tagDao.addTag(tag);
+            for (Tag tag: tagsToReturn) {
+                tag.setId(tagDao.addTag(tag));
+            }
+
+            Assert.assertEquals(tagsToReturn, tagDao.getAllTags());
+        } catch (PersistenceException e) {
+            Assert.fail();
         }
-
-        Assert.assertEquals(tagsToReturn, tagDao.getAllTags());
     }
 }

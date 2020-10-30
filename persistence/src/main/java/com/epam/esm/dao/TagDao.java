@@ -21,7 +21,7 @@ public interface TagDao {
      * @param name tag name.
      * @return {@code Tag}.
      */
-    Tag getTagByName(String name);
+    Tag getTag(String name);
 
     /**
      * Retrieves data of {@code Tag} from
@@ -31,7 +31,7 @@ public interface TagDao {
      * @param id tag id.
      * @return {@code Tag}.
      */
-    Tag getTagById(int id);
+    Tag getTag(int id);
 
     /**
      * Retrieves all {@code Tag} from data source.
@@ -52,8 +52,8 @@ public interface TagDao {
     /**
      * Deletes {@code Tag} from data source.
      *
-     * @param tag {@code Tag} which to deleted from data source;
+     * @param tagId id of a {@code Tag} which to delete from data source;
      * @return whether transaction was successful.
      */
-    boolean deleteTag(Tag tag);
+    boolean deleteTag(int tagId);
 }

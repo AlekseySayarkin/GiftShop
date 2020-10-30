@@ -1,6 +1,7 @@
 package com.epam.esm.dao.impl;
 
 import com.epam.esm.dao.GiftCertificateDAO;
+import com.epam.esm.dao.exception.ErrorCode;
 import com.epam.esm.dao.exception.PersistenceException;
 import com.epam.esm.model.GiftCertificate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +39,15 @@ public class SQLGiftCertificateDaoImpl implements GiftCertificateDAO {
             "left join Tags " +
             "on Tags.ID = CertificateDetails.TagID ";
 
-    private static final String SQL_GET_CERTIFICATE_BY_TAG_NAME =
+    private static final String SQL_GET_ALL_CERTIFICATES_BY_CONTENT =
+            "select * from GiftCertificates " +
+            "left join CertificateDetails " +
+            "on GiftCertificates.ID = CertificateDetails.CertificateID " +
+            "left join Tags " +
+            "on Tags.ID = CertificateDetails.TagID " +
+            "where GiftCertificates.Name like ? or Description like ? ";
+
+    private static final String SQL_GET_CERTIFICATES_BY_TAG_NAME =
             "select * from GiftCertificates " +
             "join CertificateDetails on GiftCertificates.ID = CertificateDetails.CertificateID " +
             "join Tags on Tags.ID = CertificateDetails.TagID " +
@@ -99,17 +108,14 @@ public class SQLGiftCertificateDaoImpl implements GiftCertificateDAO {
 
     @Override
     public List<GiftCertificate> getAllGiftCertificates(String content) {
-        List<GiftCertificate> certificates = getAllGiftCertificates();
-
-        certificates.removeIf(giftCertificate -> !(giftCertificate.getName().contains(content) ||
-                giftCertificate.getDescription().contains(content)));
-
-        return certificates;
+        String param = "%" + content + "%";
+        return jdbcTemplate.query(
+                SQL_GET_ALL_CERTIFICATES_BY_CONTENT, extractor, param, param);
     }
 
     @Override
     public List<GiftCertificate> getGiftCertificateByTagName(String tagName) {
-        return jdbcTemplate.query(SQL_GET_CERTIFICATE_BY_TAG_NAME, extractor, tagName);
+        return jdbcTemplate.query(SQL_GET_CERTIFICATES_BY_TAG_NAME, extractor, tagName);
     }
 
     @Override
@@ -145,7 +151,7 @@ public class SQLGiftCertificateDaoImpl implements GiftCertificateDAO {
         }, holder);
 
         if (holder.getKey() == null) {
-            throw new PersistenceException("Failed to add GiftCertificate");
+            throw new PersistenceException("Failed to add GiftCertificate", ErrorCode.FAILED_TO_ADD);
         }
 
         return holder.getKey().intValue();
@@ -183,12 +189,12 @@ public class SQLGiftCertificateDaoImpl implements GiftCertificateDAO {
     }
 
     @Override
-    public boolean createJoin(int certificateId, int tagId) {
+    public boolean createCertificateTagRelation(int certificateId, int tagId) {
         return jdbcTemplate.update(SQL_CREATE_JOIN, certificateId, tagId) == 1;
     }
 
     @Override
-    public boolean deleteJoin(int certificateId, int tagId) {
+    public boolean deleteCertificateTagRelation(int certificateId, int tagId) {
         return jdbcTemplate.update(SQL_DELETE_JOIN, certificateId, tagId) == 1;
     }
 }

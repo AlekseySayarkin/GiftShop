@@ -1,6 +1,7 @@
 package com.epam.esm.dao.impl;
 
 import com.epam.esm.dao.TagDao;
+import com.epam.esm.dao.exception.ErrorCode;
 import com.epam.esm.dao.exception.PersistenceException;
 import com.epam.esm.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +55,7 @@ public class SQLTagDaoImpl implements TagDao {
         }, holder);
 
         if (holder.getKey() == null) {
-            throw new PersistenceException("Failed to add Tag");
+            throw new PersistenceException("Failed to add Tag", ErrorCode.FAILED_TO_ADD);
         }
 
         return holder.getKey().intValue();

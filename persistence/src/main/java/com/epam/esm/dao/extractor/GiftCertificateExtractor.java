@@ -1,6 +1,5 @@
 package com.epam.esm.dao.extractor;
 
-import com.epam.esm.dao.util.Utils;
 import com.epam.esm.model.GiftCertificate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
@@ -12,6 +11,6 @@ public class GiftCertificateExtractor implements ResultSetExtractor<List<GiftCer
 
     @Override
     public List<GiftCertificate> extractData(ResultSet rs) throws SQLException {
-        return Utils.extractGiftCertificates(rs);
+        return com.epam.esm.dao.util.GiftCertificateExtractor.extractGiftCertificates(rs);
     }
 }

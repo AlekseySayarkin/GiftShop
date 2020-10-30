@@ -2,18 +2,29 @@ package com.epam.esm.dao.exception;
 
 public class PersistenceException extends Exception {
 
-    public PersistenceException() {
+    private final ErrorCode errorCode;
+
+    public PersistenceException(ErrorCode errorCode) {
+        super();
+        this.errorCode = errorCode;
     }
 
-    public PersistenceException(String message) {
+    public PersistenceException(String message, ErrorCode errorCode) {
         super(message);
+        this.errorCode = errorCode;
     }
 
-    public PersistenceException(String message, Throwable cause) {
+    public PersistenceException(String message, Throwable cause, ErrorCode errorCode) {
         super(message, cause);
+        this.errorCode = errorCode;
     }
 
-    public PersistenceException(Throwable cause) {
+    public PersistenceException(Throwable cause, ErrorCode errorCode) {
         super(cause);
+        this.errorCode = errorCode;
+    }
+
+    public ErrorCode getErrorCode() {
+        return errorCode;
     }
 }

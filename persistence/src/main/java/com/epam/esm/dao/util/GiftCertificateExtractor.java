@@ -13,7 +13,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Utils {
+public class GiftCertificateExtractor {
 
     private static final String CERTIFICATE_ID_COLUMN = "ID";
     private static final String CERTIFICATE_NAME_COLUMN = "Name";
@@ -26,7 +26,7 @@ public class Utils {
     private static final String TAG_ID_COLUMN = "TAGS.ID";
     private static final String TAG_NAME_COLUMN = "TAGS.Name";
 
-    private Utils(){
+    private GiftCertificateExtractor(){
     }
 
     public static List<GiftCertificate> extractGiftCertificates(ResultSet rs) throws SQLException {

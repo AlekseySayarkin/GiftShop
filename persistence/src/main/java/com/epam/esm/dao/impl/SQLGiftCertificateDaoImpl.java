@@ -51,10 +51,11 @@ public class SQLGiftCertificateDaoImpl implements GiftCertificateDAO {
             "select * from GiftCertificates " +
             "join CertificateDetails on GiftCertificates.ID = CertificateDetails.CertificateID " +
             "join Tags on Tags.ID = CertificateDetails.TagID " +
-            "where exists (" +
+            "where CertificateDetails.CertificateID in " +
+            "( " +
             "select CertificateDetails.CertificateID from CertificateDetails " +
             "join Tags on Tags.ID = CertificateDetails.TagID " +
-            "where Tags.name = ? and CertificateDetails.CertificateID = GiftCertificates.ID " +
+            "where Tags.name = ?" +
             ")";
 
     private static final String SQL_ADD_CERTIFICATE =

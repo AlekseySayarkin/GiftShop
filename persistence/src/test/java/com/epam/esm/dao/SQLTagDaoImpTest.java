@@ -32,54 +32,52 @@ public class SQLTagDaoImpTest {
     }
 
     @Test
-    public void whenAddTag_thenCorrectlyReturnIt() {
-        try {
-            Tag tagToReturn = new Tag("Tag to return");
-            tagToReturn.setId(tagDao.addTag(tagToReturn));
+    public void whenAddTag_thenCorrectlyReturnIt() throws PersistenceException {
+        Tag actual;
+        Tag expected;
 
-            Assert.assertEquals(tagToReturn, tagDao.getTagById(tagToReturn.getId()));
-            Assert.assertEquals(tagToReturn, tagDao.getTagByName(tagToReturn.getName()));
-        } catch (PersistenceException e) {
-            Assert.fail();
-        }
+        actual = new Tag("Tag to return");
+        actual.setId(tagDao.addTag(actual));
+
+        expected = tagDao.getTagById(actual.getId());
+        Assert.assertEquals(actual, expected);
+
+        expected = tagDao.getTagByName(actual.getName());
+        Assert.assertEquals(actual, expected);
     }
 
     @Test
-    public void whenAddTag_thenCorrectlyDeleteId() {
-        try {
-            Tag tagToDelete = new Tag("Tag to return");
-            tagToDelete.setId(tagDao.addTag(tagToDelete));
-            Assert.assertTrue(tagDao.deleteTag(tagToDelete));
-        } catch (PersistenceException e) {
-            Assert.fail();
-        }
+    public void whenAddTag_thenCorrectlyDeleteId() throws PersistenceException {
+        Tag tag = new Tag("Tag to delete");
+        tag.setId(tagDao.addTag(tag));
+
+        boolean result = tagDao.deleteTag(tag);
+        Assert.assertTrue(result);
     }
 
     @Test
-    public void whenAddTag_thenReturnNonZeroId() {
-        try {
-            Tag tagToAdd = new Tag("Tag to add");
-            Assert.assertNotEquals(0, tagDao.addTag(tagToAdd));
-        } catch (PersistenceException e) {
-            Assert.fail();
-        }
+    public void whenAddTag_thenReturnNonZeroId() throws PersistenceException {
+        Tag tag = new Tag("Tag to add");
+
+        int id = tagDao.addTag(tag);
+        Assert.assertNotEquals(0, id);
     }
 
     @Test
-    public void whenAddTags_thenCorrectlyReturnsIt() {
-        try {
-            List<Tag> tagsToReturn = new ArrayList<>();
-            tagsToReturn.add(new Tag("Tag one"));
-            tagsToReturn.add(new Tag("Tag two"));
-            tagsToReturn.add(new Tag("Tag three"));
+    public void whenAddTags_thenCorrectlyReturnsIt() throws PersistenceException {
+        List<Tag> expected;
+        List<Tag> actual;
 
-            for (Tag tag: tagsToReturn) {
-                tag.setId(tagDao.addTag(tag));
-            }
+        expected = new ArrayList<>();
+        expected.add(new Tag("Tag one"));
+        expected.add(new Tag("Tag two"));
+        expected.add(new Tag("Tag three"));
 
-            Assert.assertEquals(tagsToReturn, tagDao.getAllTags());
-        } catch (PersistenceException e) {
-            Assert.fail();
+        for (Tag tag: expected) {
+            tag.setId(tagDao.addTag(tag));
         }
+
+        actual = tagDao.getAllTags();
+        Assert.assertEquals(expected, actual);
     }
 }

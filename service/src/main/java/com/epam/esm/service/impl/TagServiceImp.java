@@ -1,6 +1,7 @@
 package com.epam.esm.service.impl;
 
 import com.epam.esm.dao.TagDao;
+import com.epam.esm.dao.exception.ErrorCode;
 import com.epam.esm.dao.exception.PersistenceException;
 import com.epam.esm.model.Tag;
 import com.epam.esm.service.TagService;
@@ -22,18 +23,18 @@ public class TagServiceImp implements TagService {
     @Override
     public Tag getTag(String name) throws ServiceException {
         try {
-            return tagDao.getTagByName(name);
+            return tagDao.getTag(name);
         } catch (DataAccessException e) {
-            throw new ServiceException("Failed to get tag");
+            throw new ServiceException("Failed to get tag", ErrorCode.NOT_FOUND);
         }
     }
 
     @Override
     public Tag getTag(int id) throws ServiceException {
         try {
-            return tagDao.getTagById(id);
+            return tagDao.getTag(id);
         } catch (DataAccessException e) {
-            throw new ServiceException("Failed to get tag");
+            throw new ServiceException("Failed to get tag", ErrorCode.NOT_FOUND);
         }
     }
 
@@ -42,7 +43,7 @@ public class TagServiceImp implements TagService {
         try {
             return tagDao.getAllTags();
         } catch (DataAccessException e) {
-            throw new ServiceException("Failed to get tags");
+            throw new ServiceException("Failed to get tags", ErrorCode.NOT_FOUND);
         }
     }
 
@@ -51,18 +52,18 @@ public class TagServiceImp implements TagService {
         try {
             return tagDao.addTag(tag);
         } catch (DataAccessException e) {
-            throw new ServiceException("Failed to add tag");
+            throw new ServiceException("Failed to add tag", ErrorCode.FAILED_TO_ADD);
         } catch (PersistenceException e) {
-            throw new ServiceException("Unable to ged tag id");
+            throw new ServiceException("Unable to ged tag id", ErrorCode.FAILED_TO_ADD);
         }
     }
 
     @Override
     public boolean deleteTag(int tagId) throws ServiceException {
         try {
-            return tagDao.deleteTag(new Tag(tagId, "replace"));
+            return tagDao.deleteTag(tagId);
         } catch (DataAccessException e) {
-            throw new ServiceException("Failed to delete tag");
+            throw new ServiceException("Failed to delete tag", ErrorCode.FAILED_TO_DELETE);
         }
     }
 }

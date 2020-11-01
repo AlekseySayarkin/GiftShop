@@ -124,9 +124,9 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
             return giftCertificateDAO.updateGiftCertificate(giftCertificate);
         } catch (DataAccessException e) {
-            throw new ServiceException("Failed to get certificate", ErrorCode.FAILED_TO_ADD);
+            throw new ServiceException("Failed to get certificate", ErrorCode.FAILED_TO_UPDATE);
         } catch (PersistenceException e) {
-            throw new ServiceException("Failed to return certificate id", ErrorCode.FAILED_TO_ADD);
+            throw new ServiceException("Failed to return certificate id", ErrorCode.FAILED_TO_UPDATE);
         }
     }
 

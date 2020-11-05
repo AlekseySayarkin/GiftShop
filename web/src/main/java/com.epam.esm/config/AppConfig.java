@@ -11,6 +11,8 @@ import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.model.Tag;
 import com.epam.esm.service.impl.GiftCertificateServiceImpl;
 import com.epam.esm.service.impl.TagServiceImp;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,7 +21,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -43,15 +44,18 @@ public class AppConfig {
     @Value("${db.password}")
     private String password;
 
+    @Value("${db.size}")
+    private int maxPoolSize;
+
     @Bean
     public DataSource dataSource() {
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName(driver);
-        dataSource.setUrl(url);
-        dataSource.setUsername(username);
-        dataSource.setPassword(password);
-
-        return dataSource;
+        HikariConfig cfg = new HikariConfig();
+        cfg.setDriverClassName(driver);
+        cfg.setJdbcUrl(url);
+        cfg.setUsername(username);
+        cfg.setPassword(password);
+        cfg.setMaximumPoolSize(maxPoolSize);
+        return new HikariDataSource(cfg);
     }
 
     @Bean

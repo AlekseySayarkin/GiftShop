@@ -18,13 +18,17 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
 import java.util.List;
 
 @Configuration
 @PropertySource("classpath:db.properties")
+@EnableTransactionManagement
 public class AppConfig {
 
     @Value("${db.driver}")
@@ -91,5 +95,10 @@ public class AppConfig {
     public GiftCertificateServiceImpl giftCertificateService(
             GiftCertificateDAO giftCertificateDAO, TagDao tagDao) {
         return new GiftCertificateServiceImpl(giftCertificateDAO, tagDao);
+    }
+
+    @Bean
+    public PlatformTransactionManager transactionManager(DataSource dataSource) {
+        return new DataSourceTransactionManager(dataSource);
     }
 }

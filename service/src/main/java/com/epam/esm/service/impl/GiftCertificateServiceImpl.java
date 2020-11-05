@@ -8,13 +8,13 @@ import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.model.Tag;
 import com.epam.esm.service.GiftCertificateService;
 import com.epam.esm.service.exception.ServiceException;
+import com.epam.esm.service.util.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-@Transactional
 public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     private final GiftCertificateDAO giftCertificateDAO;
@@ -28,6 +28,10 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     public GiftCertificate getGiftCertificate(String name) throws ServiceException {
+        if (name == null || name.isEmpty()) {
+            throw new ServiceException("Invalid name", ErrorCode.NOT_FOUND);
+        }
+
         try {
             return giftCertificateDAO.getGiftCertificate(name);
         } catch (DataAccessException e) {
@@ -37,6 +41,10 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     public GiftCertificate getGiftCertificate(int id) throws ServiceException {
+        if (id <= 0) {
+            throw new ServiceException("Invalid id", ErrorCode.NOT_FOUND);
+        }
+
         try {
             return giftCertificateDAO.getGiftCertificate(id);
         } catch (DataAccessException e) {
@@ -55,6 +63,10 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     public List<GiftCertificate> getAllGiftCertificates(String content) throws ServiceException {
+        if (content == null || content.isEmpty()) {
+            throw new ServiceException("Invalid content", ErrorCode.NOT_FOUND);
+        }
+
         try {
             return giftCertificateDAO.getAllGiftCertificates(content);
         } catch (DataAccessException e) {
@@ -64,6 +76,10 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     public List<GiftCertificate> getGiftCertificateByTagName(String tagName) throws ServiceException {
+        if (tagName == null || tagName.isEmpty()) {
+            throw new ServiceException("Invalid tag name", ErrorCode.NOT_FOUND);
+        }
+
         try {
             return giftCertificateDAO.getGiftCertificateByTagName(tagName);
         } catch (DataAccessException e) {
@@ -92,7 +108,12 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
+    @Transactional
     public int addGiftCertificate(GiftCertificate giftCertificate) throws ServiceException {
+        if (!Validator.isValid(giftCertificate)) {
+            throw new ServiceException("Invalid certificate", ErrorCode.NOT_FOUND);
+        }
+
         try {
             giftCertificate.setId(giftCertificateDAO.addGiftCertificate(giftCertificate));
 
@@ -107,7 +128,12 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
+    @Transactional
     public boolean deleteGiftCertificate(GiftCertificate giftCertificate) throws ServiceException {
+        if (!Validator.isValid(giftCertificate)) {
+            throw new ServiceException("Invalid certificate", ErrorCode.NOT_FOUND);
+        }
+
         try {
             for (Tag tag : giftCertificate.getTags()) {
                 giftCertificateDAO.deleteCertificateTagRelation(giftCertificate.getId(), tag.getId());
@@ -120,7 +146,12 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
+    @Transactional
     public boolean updateGiftCertificate(GiftCertificate giftCertificate) throws ServiceException {
+        if (!Validator.isValid(giftCertificate)) {
+            throw new ServiceException("Invalid certificate", ErrorCode.NOT_FOUND);
+        }
+
         try {
             addNewTagsToCertificate(giftCertificate);
 

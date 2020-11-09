@@ -110,7 +110,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     @Transactional
     public int addGiftCertificate(GiftCertificate giftCertificate) throws ServiceException {
-        if (!Validator.isValid(giftCertificate)) {
+        if (Validator.isNonValid(giftCertificate)) {
             throw new ServiceException("Invalid certificate", ErrorCode.NOT_FOUND);
         }
 
@@ -130,7 +130,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     @Transactional
     public boolean deleteGiftCertificate(GiftCertificate giftCertificate) throws ServiceException {
-        if (!Validator.isValid(giftCertificate)) {
+        if (Validator.isNonValid(giftCertificate)) {
             throw new ServiceException("Invalid certificate", ErrorCode.NOT_FOUND);
         }
 
@@ -148,7 +148,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     @Transactional
     public boolean updateGiftCertificate(GiftCertificate giftCertificate) throws ServiceException {
-        if (!Validator.isValid(giftCertificate)) {
+        if (Validator.isNonValid(giftCertificate)) {
             throw new ServiceException("Invalid certificate", ErrorCode.NOT_FOUND);
         }
 

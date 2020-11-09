@@ -18,16 +18,16 @@ public class Validator {
         return tag.getName() != null && !tag.getName().isEmpty();
     }
 
-    public static boolean isValid(GiftCertificate giftCertificate) {
+    public static boolean isNonValid(GiftCertificate giftCertificate) {
         if (giftCertificate == null || giftCertificate.getId() < 0) {
-            return false;
+            return true;
         }
 
-        return isValidNameAndDescription(giftCertificate.getName(), giftCertificate.getDescription()) &&
-                isValidPrice(giftCertificate.getPrice()) &&
-                isValidCreateAndUpdateDates(
-                    giftCertificate.getCreateDate(), giftCertificate.getLastUpdateDate()) &&
-                isValidDuration(giftCertificate.getDuration());
+        return !isValidNameAndDescription(giftCertificate.getName(), giftCertificate.getDescription()) ||
+                !isValidPrice(giftCertificate.getPrice()) ||
+                !isValidCreateAndUpdateDates(
+                        giftCertificate.getCreateDate(), giftCertificate.getLastUpdateDate()) ||
+                !isValidDuration(giftCertificate.getDuration());
     }
 
     private static boolean isValidNameAndDescription(String name, String description) {

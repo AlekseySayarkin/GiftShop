@@ -24,4 +24,8 @@ public class ServiceException extends Exception {
         super(cause);
         this.errorCode = errorCode;
     }
+
+    public ErrorCode getErrorCode() {
+        return errorCode;
+    }
 }

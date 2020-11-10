@@ -23,6 +23,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -30,7 +31,7 @@ import java.util.List;
 @Configuration
 @PropertySource("classpath:db.properties")
 @EnableTransactionManagement
-public class AppConfig {
+public class RootConfig implements WebMvcConfigurer {
 
     @Value("${db.driver}")
     private String driver;

@@ -1,5 +1,6 @@
 package com.epam.esm.config;
 
+import com.epam.esm.controller.TagController;
 import com.epam.esm.dao.GiftCertificateDAO;
 import com.epam.esm.dao.TagDao;
 import com.epam.esm.dao.impl.SQLGiftCertificateDaoImpl;
@@ -9,6 +10,7 @@ import com.epam.esm.dao.mapper.GiftCertificateMapper;
 import com.epam.esm.dao.mapper.TagRowMapper;
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.model.Tag;
+import com.epam.esm.service.TagService;
 import com.epam.esm.service.impl.GiftCertificateServiceImpl;
 import com.epam.esm.service.impl.TagServiceImp;
 import com.zaxxer.hikari.HikariConfig;
@@ -105,5 +107,10 @@ public class RootConfig implements WebMvcConfigurer {
     @Bean
     public PlatformTransactionManager transactionManager(DataSource dataSource) {
         return new DataSourceTransactionManager(dataSource);
+    }
+
+    @Bean
+    public TagController tagController(TagService tagService) {
+        return new TagController(tagService);
     }
 }

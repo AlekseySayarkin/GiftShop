@@ -1,7 +1,6 @@
 package com.epam.esm.model;
 
 import java.util.Objects;
-import java.util.Set;
 
 public class Tag {
 

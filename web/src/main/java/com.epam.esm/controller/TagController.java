@@ -6,10 +6,7 @@ import com.epam.esm.service.exception.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 public class TagController {
@@ -24,7 +21,7 @@ public class TagController {
     @GetMapping("/tags")
     public String home(Model model) throws ServiceException {
         model.addAttribute("tags", tagService.getAllTags());
-        return "home";
+        return "tags";
     }
 
     @PostMapping("/tags/add")
@@ -32,18 +29,18 @@ public class TagController {
         if (tag.getId() == 0) {
             tagService.addTag(tag);
         }
-        return "redirect:/home";
+        return "redirect:/tags";
     }
 
-    @PostMapping("/delete/{id}")
+    @DeleteMapping("/tags/delete/{id}")
     public String delete(@PathVariable int id) throws ServiceException {
         tagService.deleteTag(id);
-        return "redirect:/home";
+        return "redirect:/tags";
     }
 
-    @GetMapping("/tag/{id}")
+    @GetMapping("/tags/tag/{id}")
     public String get(@PathVariable int id, Model model) throws ServiceException {
         model.addAttribute("tag", tagService.getTag(id));
-        return "home";
+        return "tag";
     }
 }

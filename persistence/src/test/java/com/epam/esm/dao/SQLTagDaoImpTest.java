@@ -27,7 +27,6 @@ public class SQLTagDaoImpTest {
                 .addScript("db/Tags.sql")
                 .build();
 
-
         tagDao = new SQLTagDaoImpl(new JdbcTemplate(dataSource), new TagRowMapper());
     }
 

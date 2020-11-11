@@ -79,6 +79,8 @@ public class SQLGiftCertificateDaoImpl implements GiftCertificateDAO {
     private static final String SQL_DELETE_JOIN =
             "delete from CertificateDetails where (CertificateID = ? and TagID = ?)";
 
+    private static final int FAILED_TO_ADD_CERTIFICATE_ERROR_CODE = 50120;
+
     private final JdbcTemplate jdbcTemplate;
     private final ResultSetExtractor<List<GiftCertificate>> extractor;
     private final RowMapper<GiftCertificate> mapper;
@@ -152,7 +154,8 @@ public class SQLGiftCertificateDaoImpl implements GiftCertificateDAO {
         }, holder);
 
         if (holder.getKey() == null) {
-            throw new PersistenceException("Failed to add GiftCertificate", ErrorCode.FAILED_TO_ADD);
+            throw new PersistenceException("Failed to add GiftCertificate",
+                    new ErrorCode(FAILED_TO_ADD_CERTIFICATE_ERROR_CODE));
         }
 
         return holder.getKey().intValue();

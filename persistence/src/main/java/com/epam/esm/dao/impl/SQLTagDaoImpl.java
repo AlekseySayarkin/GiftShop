@@ -21,6 +21,8 @@ public class SQLTagDaoImpl implements TagDao {
     private static final String SQL_ADD_TAG = "insert into Tags (Name) values (?)";
     private static final String SQL_DELETE_TAG = "delete from Tags where ID = ?";
 
+    private static final int FAILED_TO_ADD_TAG_ERROR_CODE = 50110;
+
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<Tag> tagRowMapper;
 
@@ -55,7 +57,7 @@ public class SQLTagDaoImpl implements TagDao {
         }, holder);
 
         if (holder.getKey() == null) {
-            throw new PersistenceException("Failed to add Tag", ErrorCode.FAILED_TO_ADD);
+            throw new PersistenceException("Failed to add Tag", new ErrorCode(FAILED_TO_ADD_TAG_ERROR_CODE));
         }
 
         return holder.getKey().intValue();

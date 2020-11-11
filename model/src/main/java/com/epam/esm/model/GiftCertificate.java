@@ -1,6 +1,7 @@
 package com.epam.esm.model;
 
 import java.time.ZonedDateTime;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -13,7 +14,7 @@ public class GiftCertificate {
     private ZonedDateTime createDate;
     private ZonedDateTime lastUpdateDate;
     private int duration;
-    private Set<Tag> tags;
+    private Set<Tag> tags = new HashSet<>();
 
     public int getId() {
         return id;
@@ -43,7 +44,7 @@ public class GiftCertificate {
         return price;
     }
 
-    public void setPrice(int price) {
+    public void setPrice(double price) {
         this.price = price;
     }
 

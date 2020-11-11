@@ -1,5 +1,6 @@
 package com.epam.esm.dao;
 
+import com.epam.esm.dao.exception.PersistenceException;
 import com.epam.esm.dao.impl.SQLTagDaoImpl;
 import com.epam.esm.dao.mapper.TagRowMapper;
 import com.epam.esm.model.Tag;
@@ -30,39 +31,52 @@ public class SQLTagDaoImpTest {
     }
 
     @Test
-    public void whenAddTag_thenCorrectlyDeleteId() {
-        Tag tagToDelete = new Tag("Tag to delete");
-        tagToDelete.setId(tagDao.addTag(tagToDelete));
-        Assert.assertTrue(tagDao.deleteTag(tagToDelete.getId()));
+    public void whenAddTag_thenCorrectlyReturnIt() throws PersistenceException {
+        Tag actual;
+        Tag expected;
+
+        actual = new Tag("Tag to return");
+        actual.setId(tagDao.addTag(actual));
+
+        expected = tagDao.getTag(actual.getId());
+        Assert.assertEquals(actual, expected);
+
+        expected = tagDao.getTag(actual.getName());
+        Assert.assertEquals(actual, expected);
     }
 
     @Test
-    public void whenAddTag_thenCorrectlyReturnItById() {
-        Tag tagToAdd = new Tag("Tag to add");
-        tagToAdd.setId(tagDao.addTag(tagToAdd));
+    public void whenAddTag_thenCorrectlyDeleteId() throws PersistenceException {
+        Tag tag = new Tag("Tag to delete");
+        tag.setId(tagDao.addTag(tag));
 
-        Assert.assertEquals(tagToAdd, tagDao.getTag(tagToAdd.getId()));
+        boolean result = tagDao.deleteTag(tag.getId());
+        Assert.assertTrue(result);
     }
 
     @Test
-    public void whenAddTag_thenCorrectlyReturnItByName() {
-        Tag tagToReturn = new Tag("Tag to return");
-        tagToReturn.setId(tagDao.addTag(tagToReturn));
+    public void whenAddTag_thenReturnNonZeroId() throws PersistenceException {
+        Tag tag = new Tag("Tag to add");
 
-        Assert.assertEquals(tagToReturn, tagDao.getTag(tagToReturn.getName()));
+        int id = tagDao.addTag(tag);
+        Assert.assertNotEquals(0, id);
     }
 
     @Test
-    public void whenAddTags_thenCorrectlyReturnsIt() {
-        List<Tag> tagsToReturn = new ArrayList<>();
-        tagsToReturn.add(new Tag("Tag one"));
-        tagsToReturn.add(new Tag("Tag two"));
-        tagsToReturn.add(new Tag("Tag three"));
+    public void whenAddTags_thenCorrectlyReturnsIt() throws PersistenceException {
+        List<Tag> expected;
+        List<Tag> actual;
 
-        for (Tag tag: tagsToReturn) {
+        expected = new ArrayList<>();
+        expected.add(new Tag("Tag one"));
+        expected.add(new Tag("Tag two"));
+        expected.add(new Tag("Tag three"));
+
+        for (Tag tag: expected) {
             tag.setId(tagDao.addTag(tag));
         }
 
-        Assert.assertEquals(tagsToReturn, tagDao.getAllTags());
+        actual = tagDao.getAllTags();
+        Assert.assertEquals(expected, actual);
     }
 }

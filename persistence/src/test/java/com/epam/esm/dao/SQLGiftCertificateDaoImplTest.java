@@ -120,7 +120,7 @@ public class SQLGiftCertificateDaoImplTest {
             giftCertificateDAO.deleteCertificateTagRelation(certificate.getId(), tagDao.getTag(tag.getName()).getId());
         }
 
-        Assert.assertTrue(giftCertificateDAO.deleteGiftCertificate(certificate));
+        Assert.assertTrue(giftCertificateDAO.deleteGiftCertificate(certificate.getId()));
     }
 
     @Test
@@ -176,7 +176,7 @@ public class SQLGiftCertificateDaoImplTest {
 
         Assert.assertEquals(toUpdate.getId(), updated.getId());
         Assert.assertEquals(toUpdate.getName(), updated.getName());
-        Assert.assertEquals(toUpdate.getPrice(), updated.getPrice(), 0);
+        Assert.assertEquals(toUpdate.getPrice(), updated.getPrice(), 0.0001);
         Assert.assertEquals(toUpdate.getDuration(), updated.getDuration());
         Assert.assertEquals(toUpdate.getTags(), updated.getTags());
     }

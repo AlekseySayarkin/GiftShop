@@ -159,8 +159,8 @@ public class SQLGiftCertificateDaoImpl implements GiftCertificateDAO {
     }
 
     @Override
-    public boolean deleteGiftCertificate(GiftCertificate giftCertificate) {
-        return jdbcTemplate.update(SQL_DELETE_CERTIFICATE, giftCertificate.getId()) == 1;
+    public boolean deleteGiftCertificate(int id) {
+        return jdbcTemplate.update(SQL_DELETE_CERTIFICATE, id) == 1;
     }
 
     @Override

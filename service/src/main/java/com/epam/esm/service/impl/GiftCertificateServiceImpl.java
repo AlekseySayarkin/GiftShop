@@ -8,7 +8,7 @@ import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.model.Tag;
 import com.epam.esm.service.GiftCertificateService;
 import com.epam.esm.service.exception.ServiceException;
-import com.epam.esm.service.util.Validator;
+import com.epam.esm.service.util.CertificateValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.transaction.annotation.Transactional;
@@ -110,7 +110,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     @Transactional
     public int addGiftCertificate(GiftCertificate giftCertificate) throws ServiceException {
-        if (Validator.isNonValid(giftCertificate)) {
+        if (CertificateValidator.isNonValid(giftCertificate)) {
             throw new ServiceException("Invalid certificate", ErrorCode.NOT_FOUND);
         }
 
@@ -130,7 +130,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     @Transactional
     public boolean deleteGiftCertificate(GiftCertificate giftCertificate) throws ServiceException {
-        if (Validator.isNonValid(giftCertificate)) {
+        if (CertificateValidator.isNonValid(giftCertificate)) {
             throw new ServiceException("Invalid certificate", ErrorCode.NOT_FOUND);
         }
 
@@ -139,7 +139,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
                 giftCertificateDAO.deleteCertificateTagRelation(giftCertificate.getId(), tag.getId());
             }
 
-            return giftCertificateDAO.deleteGiftCertificate(giftCertificate);
+            return giftCertificateDAO.deleteGiftCertificate(giftCertificate.getId());
         } catch (DataAccessException e) {
             throw new ServiceException("Failed to get certificate", ErrorCode.FAILED_TO_DELETE);
         }
@@ -148,7 +148,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     @Transactional
     public boolean updateGiftCertificate(GiftCertificate giftCertificate) throws ServiceException {
-        if (Validator.isNonValid(giftCertificate)) {
+        if (CertificateValidator.isNonValid(giftCertificate)) {
             throw new ServiceException("Invalid certificate", ErrorCode.NOT_FOUND);
         }
 

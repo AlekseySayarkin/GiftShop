@@ -6,7 +6,7 @@ import com.epam.esm.dao.exception.PersistenceException;
 import com.epam.esm.model.Tag;
 import com.epam.esm.service.TagService;
 import com.epam.esm.service.exception.ServiceException;
-import com.epam.esm.service.util.Validator;
+import com.epam.esm.service.util.TagValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 
@@ -58,7 +58,7 @@ public class TagServiceImp implements TagService {
 
     @Override
     public int addTag(Tag tag) throws ServiceException {
-        if (!Validator.isValid(tag)) {
+        if (!TagValidator.isValid(tag)) {
             throw new ServiceException("Invalid tag", ErrorCode.NOT_FOUND);
         }
 

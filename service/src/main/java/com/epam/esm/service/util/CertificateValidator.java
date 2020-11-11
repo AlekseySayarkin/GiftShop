@@ -1,21 +1,12 @@
 package com.epam.esm.service.util;
 
 import com.epam.esm.model.GiftCertificate;
-import com.epam.esm.model.Tag;
 
 import java.time.ZonedDateTime;
 
-public class Validator {
+public class CertificateValidator {
 
-    private Validator() {
-    }
-
-    public static boolean isValid(Tag tag) {
-        if (tag == null || tag.getId() < 0) {
-            return false;
-        }
-
-        return tag.getName() != null && !tag.getName().isEmpty();
+    private CertificateValidator() {
     }
 
     public static boolean isNonValid(GiftCertificate giftCertificate) {
@@ -23,10 +14,10 @@ public class Validator {
             return true;
         }
 
-        return !isValidNameAndDescription(giftCertificate.getName(), giftCertificate.getDescription()) ||
-                !isValidPrice(giftCertificate.getPrice()) ||
+        return !isValidNameAndDescription(giftCertificate.getName(), giftCertificate.getDescription()) &&
+                !isValidPrice(giftCertificate.getPrice()) &&
                 !isValidCreateAndUpdateDates(
-                        giftCertificate.getCreateDate(), giftCertificate.getLastUpdateDate()) ||
+                        giftCertificate.getCreateDate(), giftCertificate.getLastUpdateDate()) &&
                 !isValidDuration(giftCertificate.getDuration());
     }
 

@@ -9,7 +9,6 @@ import com.epam.esm.service.impl.TagServiceImp;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import java.util.ArrayList;
@@ -17,9 +16,7 @@ import java.util.List;
 
 public class TagServiceImpTest {
 
-    @Mock
     private TagDao tagDao;
-
     private TagService tagService;
 
     @Before
@@ -40,9 +37,11 @@ public class TagServiceImpTest {
 
         actual = tagService.getTag(expected.getId());
         Assert.assertEquals(expected, actual);
+        Mockito.verify(tagDao).getTag(expected.getId());
 
         actual = tagService.getTag(expected.getName());
         Assert.assertEquals(expected, actual);
+        Mockito.verify(tagDao).getTag(expected.getName());
     }
 
     @Test
@@ -59,6 +58,7 @@ public class TagServiceImpTest {
         actual = tagService.getAllTags();
 
         Assert.assertEquals(expected, actual);
+        Mockito.verify(tagDao).getAllTags();
     }
 
     @Test
@@ -70,6 +70,7 @@ public class TagServiceImpTest {
         tag.setId(tagService.addTag(tag));
 
         Assert.assertEquals(expectedId, tag.getId());
+        Mockito.verify(tagDao).addTag(tag);
     }
 
     @Test
@@ -91,5 +92,6 @@ public class TagServiceImpTest {
         boolean result = tagService.deleteTag(tag.getId());
 
         Assert.assertTrue(result);
+        Mockito.verify(tagDao).deleteTag(tag.getId());
     }
 }

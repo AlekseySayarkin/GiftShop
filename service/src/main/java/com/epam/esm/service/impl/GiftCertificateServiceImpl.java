@@ -20,6 +20,12 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     private final GiftCertificateDAO giftCertificateDAO;
     private final TagDao tagDao;
 
+    private static final int INVALID_INPUT = 40402;
+    private static final int FAILED_TO_GET = 50102;
+    private static final int FAILED_TO_ADD = 50202;
+    private static final int FAILED_TO_DELETE = 503;
+    private static final int FAILED_TO_UPDATE = 504;
+
     @Autowired
     public GiftCertificateServiceImpl(GiftCertificateDAO giftCertificateDAO, TagDao tagDao) {
         this.giftCertificateDAO = giftCertificateDAO;
@@ -29,26 +35,26 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     public GiftCertificate getGiftCertificate(String name) throws ServiceException {
         if (name == null || name.isEmpty()) {
-            throw new ServiceException("Invalid name", ErrorCode.NOT_FOUND);
+            throw new ServiceException("Invalid name", new ErrorCode(INVALID_INPUT));
         }
 
         try {
             return giftCertificateDAO.getGiftCertificate(name);
         } catch (DataAccessException e) {
-            throw new ServiceException("Failed to get certificate", ErrorCode.NOT_FOUND);
+            throw new ServiceException("Failed to get certificate", new ErrorCode(FAILED_TO_GET));
         }
     }
 
     @Override
     public GiftCertificate getGiftCertificate(int id) throws ServiceException {
         if (id <= 0) {
-            throw new ServiceException("Invalid id", ErrorCode.NOT_FOUND);
+            throw new ServiceException("Invalid id",  new ErrorCode(INVALID_INPUT));
         }
 
         try {
             return giftCertificateDAO.getGiftCertificate(id);
         } catch (DataAccessException e) {
-            throw new ServiceException("Failed to get certificate", ErrorCode.NOT_FOUND);
+            throw new ServiceException("Failed to get certificate", new ErrorCode(FAILED_TO_GET));
         }
     }
 
@@ -57,33 +63,33 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         try {
             return giftCertificateDAO.getAllGiftCertificates();
         } catch (DataAccessException e) {
-            throw new ServiceException("Failed to get certificate", ErrorCode.NOT_FOUND);
+            throw new ServiceException("Failed to get certificate",  new ErrorCode(INVALID_INPUT));
         }
     }
 
     @Override
     public List<GiftCertificate> getAllGiftCertificates(String content) throws ServiceException {
         if (content == null || content.isEmpty()) {
-            throw new ServiceException("Invalid content", ErrorCode.NOT_FOUND);
+            throw new ServiceException("Invalid content",  new ErrorCode(INVALID_INPUT));
         }
 
         try {
             return giftCertificateDAO.getAllGiftCertificates(content);
         } catch (DataAccessException e) {
-            throw new ServiceException("Failed to get certificate", ErrorCode.NOT_FOUND);
+            throw new ServiceException("Failed to get certificate", new ErrorCode(FAILED_TO_GET));
         }
     }
 
     @Override
     public List<GiftCertificate> getGiftCertificateByTagName(String tagName) throws ServiceException {
         if (tagName == null || tagName.isEmpty()) {
-            throw new ServiceException("Invalid tag name", ErrorCode.NOT_FOUND);
+            throw new ServiceException("Invalid tag name",  new ErrorCode(INVALID_INPUT));
         }
 
         try {
             return giftCertificateDAO.getGiftCertificateByTagName(tagName);
         } catch (DataAccessException e) {
-            throw new ServiceException("Failed to get certificate", ErrorCode.NOT_FOUND);
+            throw new ServiceException("Failed to get certificate", new ErrorCode(FAILED_TO_GET));
         }
     }
 
@@ -93,7 +99,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         try {
             return giftCertificateDAO.getAllGiftCertificatesSortedByName(isAscending);
         } catch (DataAccessException e) {
-            throw new ServiceException("Failed to get certificate", ErrorCode.NOT_FOUND);
+            throw new ServiceException("Failed to get certificate", new ErrorCode(FAILED_TO_GET));
         }
     }
 
@@ -103,7 +109,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         try {
             return giftCertificateDAO.getAllGiftCertificatesSortedByDate(isAscending);
         } catch (DataAccessException e) {
-            throw new ServiceException("Failed to get certificate", ErrorCode.NOT_FOUND);
+            throw new ServiceException("Failed to get certificate", new ErrorCode(FAILED_TO_GET));
         }
     }
 
@@ -111,7 +117,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Transactional
     public int addGiftCertificate(GiftCertificate giftCertificate) throws ServiceException {
         if (CertificateValidator.isNonValid(giftCertificate)) {
-            throw new ServiceException("Invalid certificate", ErrorCode.NOT_FOUND);
+            throw new ServiceException("Invalid certificate",  new ErrorCode(INVALID_INPUT));
         }
 
         try {
@@ -121,9 +127,9 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
             return giftCertificate.getId();
         } catch (DataAccessException e) {
-            throw new ServiceException("Failed to get certificate", ErrorCode.FAILED_TO_ADD);
+            throw new ServiceException("Failed to get certificate", new ErrorCode(FAILED_TO_ADD));
         } catch (PersistenceException e) {
-            throw new ServiceException("Failed to return certificate id", ErrorCode.FAILED_TO_ADD);
+            throw new ServiceException("Failed to return certificate id", new ErrorCode(FAILED_TO_ADD));
         }
     }
 
@@ -131,7 +137,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Transactional
     public boolean deleteGiftCertificate(GiftCertificate giftCertificate) throws ServiceException {
         if (CertificateValidator.isNonValid(giftCertificate)) {
-            throw new ServiceException("Invalid certificate", ErrorCode.NOT_FOUND);
+            throw new ServiceException("Invalid certificate", new ErrorCode(INVALID_INPUT));
         }
 
         try {
@@ -141,7 +147,8 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
             return giftCertificateDAO.deleteGiftCertificate(giftCertificate.getId());
         } catch (DataAccessException e) {
-            throw new ServiceException("Failed to get certificate", ErrorCode.FAILED_TO_DELETE);
+            throw new ServiceException("Failed to get certificate",
+                    new ErrorCode(FAILED_TO_DELETE + giftCertificate.getId()));
         }
     }
 
@@ -149,7 +156,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Transactional
     public boolean updateGiftCertificate(GiftCertificate giftCertificate) throws ServiceException {
         if (CertificateValidator.isNonValid(giftCertificate)) {
-            throw new ServiceException("Invalid certificate", ErrorCode.NOT_FOUND);
+            throw new ServiceException("Invalid certificate",  new ErrorCode(INVALID_INPUT));
         }
 
         try {
@@ -157,9 +164,11 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
             return giftCertificateDAO.updateGiftCertificate(giftCertificate);
         } catch (DataAccessException e) {
-            throw new ServiceException("Failed to get certificate", ErrorCode.FAILED_TO_UPDATE);
+            throw new ServiceException("Failed to get certificate",
+                    new ErrorCode(FAILED_TO_UPDATE + giftCertificate.getId()));
         } catch (PersistenceException e) {
-            throw new ServiceException("Failed to return certificate id", ErrorCode.FAILED_TO_UPDATE);
+            throw new ServiceException("Failed to return certificate id",
+                    new ErrorCode(FAILED_TO_UPDATE + giftCertificate.getId()));
         }
     }
 

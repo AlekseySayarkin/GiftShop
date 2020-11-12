@@ -4,6 +4,6 @@
     <title>Home</title>
 </head>
 <body>
-    <a href="${pageContext.request.contextPath}\tags">Go to tags</a>
+    <a href="${pageContext.request.contextPath}/tags">Go to tags</a>
 </body>
 </html>

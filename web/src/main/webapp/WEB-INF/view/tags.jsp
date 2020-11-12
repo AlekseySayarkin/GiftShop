@@ -1,4 +1,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <!DOCTYPE html>
 <html lang="en">
@@ -7,8 +8,12 @@
     <meta charset="utf-8">
     <link rel="stylesheet" href="<c:url value='/css/table.css'/>">
     <link rel="stylesheet" href="<c:url value='/css/body.css'/>">
+    <link rel="stylesheet" href="<c:url value='/css/ui.css'/>">
 </head>
 <body>
+<div class="go-add">
+    <a href="${pageContext.request.contextPath}/tags/add">Add new tag</a>
+</div>
 <jsp:useBean id="tags" scope="request" type="java.util.List"/>
 <c:if test="${!empty tags}">
     <div class="container">
@@ -19,7 +24,7 @@
             </tr>
             <c:forEach items="${tags}" var="tag">
                 <tr>
-                    <td><a href="${pageContext.request.contextPath}/tags/tag/${tag.id}">${tag.id}</a> </td>
+                    <td><a href="${pageContext.request.contextPath}/tags/tag/${tag.id}">${tag.id}</a></td>
                     <td>${tag.name}</td>
                 </tr>
             </c:forEach>

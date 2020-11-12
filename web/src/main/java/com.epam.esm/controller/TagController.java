@@ -24,7 +24,7 @@ public class TagController {
         return "tags";
     }
 
-    @PostMapping("/tags/add")
+    @PutMapping("/tags/add")
     public String add(@ModelAttribute("Tag") Tag tag) throws ServiceException {
         if (tag.getId() == 0) {
             tagService.addTag(tag);
@@ -32,7 +32,12 @@ public class TagController {
         return "redirect:/tags";
     }
 
-    @DeleteMapping("/tags/delete/{id}")
+    @GetMapping("/tags/add")
+    public String getAddPage() {
+        return "add";
+    }
+
+    @DeleteMapping("/tags/tag/{id}")
     public String delete(@PathVariable int id) throws ServiceException {
         tagService.deleteTag(id);
         return "redirect:/tags";
@@ -42,5 +47,13 @@ public class TagController {
     public String get(@PathVariable int id, Model model) throws ServiceException {
         model.addAttribute("tag", tagService.getTag(id));
         return "tag";
+    }
+
+    @ExceptionHandler(ServiceException.class)
+    public String handleServiceException(ServiceException exception, Model model) {
+        model.addAttribute("ErrorCode", exception.getErrorCode());
+        model.addAttribute("message", exception.getMessage());
+        //todo make correct and localized error handling
+        return "error";
     }
 }

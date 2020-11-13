@@ -63,10 +63,7 @@ public class TagServiceImp implements TagService {
 
     @Override
     public int addTag(Tag tag) throws ServiceException {
-        if (!TagValidator.isValid(tag)) {
-            throw new ServiceException("Invalid tag", new ErrorCode(INVALID_INPUT));
-        }
-
+        TagValidator.validateTag(tag);
         try {
             return tagDao.addTag(tag);
         } catch (DataAccessException e) {

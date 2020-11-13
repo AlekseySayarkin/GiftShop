@@ -116,10 +116,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     @Transactional
     public int addGiftCertificate(GiftCertificate giftCertificate) throws ServiceException {
-        if (CertificateValidator.isNonValid(giftCertificate)) {
-            throw new ServiceException("Invalid certificate",  new ErrorCode(INVALID_INPUT));
-        }
-
+        CertificateValidator.validateCertificate(giftCertificate);
         try {
             giftCertificate.setId(giftCertificateDAO.addGiftCertificate(giftCertificate));
 
@@ -136,10 +133,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     @Transactional
     public boolean deleteGiftCertificate(GiftCertificate giftCertificate) throws ServiceException {
-        if (CertificateValidator.isNonValid(giftCertificate)) {
-            throw new ServiceException("Invalid certificate", new ErrorCode(INVALID_INPUT));
-        }
-
+        CertificateValidator.validateCertificate(giftCertificate);
         try {
             for (Tag tag : giftCertificate.getTags()) {
                 giftCertificateDAO.deleteCertificateTagRelation(giftCertificate.getId(), tag.getId());
@@ -155,10 +149,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     @Transactional
     public boolean updateGiftCertificate(GiftCertificate giftCertificate) throws ServiceException {
-        if (CertificateValidator.isNonValid(giftCertificate)) {
-            throw new ServiceException("Invalid certificate",  new ErrorCode(INVALID_INPUT));
-        }
-
+        CertificateValidator.validateCertificate(giftCertificate);
         try {
             addNewTagsToCertificate(giftCertificate);
 

@@ -123,7 +123,7 @@ public class SQLGiftCertificateDaoImpl implements GiftCertificateDAO {
 
     @Override
     public List<GiftCertificate> getAllGiftCertificatesSortedByName(boolean isAscending) {
-        return getAllGiftCertificatesSortedByParameter("Name", isAscending);
+        return getAllGiftCertificatesSortedByParameter("GiftCertificates.Name", isAscending);
     }
 
     @Override

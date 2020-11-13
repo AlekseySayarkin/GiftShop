@@ -1,7 +1,9 @@
 package com.epam.esm.config;
 
+import com.epam.esm.controller.CertificateController;
 import com.epam.esm.controller.ExceptionHandlerController;
 import com.epam.esm.controller.TagController;
+import com.epam.esm.service.GiftCertificateService;
 import com.epam.esm.service.TagService;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
@@ -39,6 +41,13 @@ public class WebConfig implements WebMvcConfigurer {
     public TagController tagController(
             TagService tagService, CookieLocaleResolver cookieLocaleResolver, MessageSource messageSource) {
         return new TagController(tagService, cookieLocaleResolver, messageSource);
+    }
+
+    @Bean
+    public CertificateController certificateController(
+            MessageSource messageSource, CookieLocaleResolver cookieLocaleResolver,
+            GiftCertificateService giftCertificateService) {
+        return new CertificateController(messageSource, cookieLocaleResolver, giftCertificateService);
     }
 
     @Bean

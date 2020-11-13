@@ -12,6 +12,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
 import java.sql.*;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class SQLGiftCertificateDaoImpl implements GiftCertificateDAO {
@@ -147,8 +148,12 @@ public class SQLGiftCertificateDaoImpl implements GiftCertificateDAO {
             ps.setString(1, giftCertificate.getName());
             ps.setString(2, giftCertificate.getDescription());
             ps.setDouble(3, giftCertificate.getPrice());
-            ps.setTimestamp(4, Timestamp.from(giftCertificate.getCreateDate().toInstant()));
-            ps.setTimestamp(5, Timestamp.from(giftCertificate.getLastUpdateDate().toInstant()));
+            ps.setTimestamp(4,
+                    Timestamp.valueOf(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss")
+                            .format(giftCertificate.getCreateDate())));
+            ps.setTimestamp(5,
+                    Timestamp.valueOf(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss").
+                            format(giftCertificate.getLastUpdateDate())));
             ps.setInt(6, giftCertificate.getDuration());
             return ps;
         }, holder);
@@ -181,7 +186,7 @@ public class SQLGiftCertificateDaoImpl implements GiftCertificateDAO {
             params[2] = giftCertificate.getPrice();
         }
 
-        params[3] = giftCertificate.getLastUpdateDate();
+        params[3] = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss").format(giftCertificate.getLastUpdateDate());
 
         if (giftCertificate.getDuration() != 0) {
             params[4] = giftCertificate.getDuration();

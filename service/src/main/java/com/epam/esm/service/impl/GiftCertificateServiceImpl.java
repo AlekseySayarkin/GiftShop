@@ -164,6 +164,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
             return giftCertificateDAO.updateGiftCertificate(giftCertificate);
         } catch (DataAccessException e) {
+            e.printStackTrace();
             throw new ServiceException("Failed to get certificate",
                     new ErrorCode(FAILED_TO_UPDATE + giftCertificate.getId()));
         } catch (PersistenceException e) {
@@ -177,9 +178,13 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         for (Tag tag : giftCertificate.getTags()) {
             if (!tagsInDataSource.contains(tag)) {
                 tag.setId(tagDao.addTag(tag));
+
             }
 
-            giftCertificateDAO.createCertificateTagRelation(giftCertificate.getId(), tag.getId());
+            try {
+                giftCertificateDAO.createCertificateTagRelation(giftCertificate.getId(), tag.getId());
+            } catch (DataAccessException ignored) {
+            }
         }
     }
 }

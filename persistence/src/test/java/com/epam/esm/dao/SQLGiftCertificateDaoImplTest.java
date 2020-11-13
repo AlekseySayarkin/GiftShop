@@ -231,7 +231,7 @@ public class SQLGiftCertificateDaoImplTest {
         }
 
         actualCertificateList = giftCertificateDAO.getAllGiftCertificatesSortedByName(true);
-        Assert.assertEquals(expectedGiftCertificates,actualCertificateList);
+        Assert.assertEquals(expectedGiftCertificates, actualCertificateList);
 
         actualCertificateList =  giftCertificateDAO.getAllGiftCertificatesSortedByName(false);
         Assert.assertNotEquals(

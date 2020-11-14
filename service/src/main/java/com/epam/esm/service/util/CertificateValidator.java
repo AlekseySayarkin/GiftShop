@@ -40,7 +40,7 @@ public class CertificateValidator {
     }
 
     private static boolean isValidPrice(double price) {
-        return price < 0;
+        return price > 0;
     }
 
     private static boolean isValidCreateAndUpdateDates(ZonedDateTime createDate, ZonedDateTime updateDate) {
@@ -49,13 +49,13 @@ public class CertificateValidator {
         }
 
         if (updateDate != null) {
-            return createDate.isBefore(updateDate);
+            return createDate.isBefore(updateDate) || createDate.equals(updateDate);
         }
 
         return true;
     }
 
     private static boolean isValidDuration(int duration) {
-        return duration < 0;
+        return duration > 0;
     }
 }

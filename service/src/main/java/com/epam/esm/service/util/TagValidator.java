@@ -16,7 +16,7 @@ public class TagValidator {
             throw new ServiceException(new ErrorCode(TAG_VALIDATION_ERROR_CODE));
         }
 
-        if (isValidName(tag.getName())) {
+        if (!isValidName(tag.getName())) {
             throw new ServiceException(new ErrorCode(TAG_VALIDATION_ERROR_CODE));
         }
     }

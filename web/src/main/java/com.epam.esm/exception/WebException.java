@@ -1,8 +1,10 @@
 package com.epam.esm.exception;
 
 import com.epam.esm.dao.exception.ErrorCode;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.springframework.http.HttpStatus;
 
+@JsonIgnoreProperties(value = {"stackTrace", "cause", "suppressed", "localizedMessage"}, allowSetters = true)
 public class WebException extends RuntimeException {
 
     private final ErrorCode errorCode;

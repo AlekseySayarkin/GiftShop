@@ -1,8 +1,6 @@
 package com.epam.esm.controller;
 
-import com.epam.esm.dao.exception.ErrorCodeEnum;
 import com.epam.esm.service.CertificateRequestBody;
-import com.epam.esm.dao.exception.ErrorCode;
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.service.GiftCertificateService;
 import com.epam.esm.service.exception.ServiceException;
@@ -45,23 +43,13 @@ public class CertificateController {
 
     @DeleteMapping("/certificates")
     public HttpStatus deleteGiftCertificate(@RequestBody GiftCertificate giftCertificate) throws ServiceException {
-        if (giftCertificateService.deleteGiftCertificate(giftCertificate)) {
-            return HttpStatus.OK;
-        } else {
-            throw new ServiceException("Failed to delete certificate",
-                    new ErrorCode(Integer.parseInt(ErrorCodeEnum.FAILED_TO_DELETE_CERTIFICATE.getCode()
-                            + String.valueOf(giftCertificate.getId()))));
-        }
+        giftCertificateService.deleteGiftCertificate(giftCertificate);
+        return HttpStatus.OK;
     }
 
     @PutMapping("/certificates")
     public HttpStatus updateGiftCertificate(@RequestBody GiftCertificate giftCertificate) throws ServiceException {
-        if (giftCertificateService.updateGiftCertificate(giftCertificate)) {
-            return HttpStatus.OK;
-        } else {
-            throw new ServiceException("Failed to update certificate",
-                    new ErrorCode(Integer.parseInt(ErrorCodeEnum.FAILED_TO_UPDATE_CERTIFICATE.getCode()
-                            + String.valueOf(giftCertificate.getId()))));
-        }
+        giftCertificateService.updateGiftCertificate(giftCertificate);
+        return HttpStatus.OK;
     }
 }

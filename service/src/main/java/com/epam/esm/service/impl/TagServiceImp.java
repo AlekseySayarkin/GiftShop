@@ -83,13 +83,17 @@ public class TagServiceImp implements TagService {
     }
 
     @Override
-    public boolean deleteTag(int tagId) throws ServiceException {
+    public void deleteTag(int tagId) throws ServiceException {
         if (tagId <= 0) {
             throw new ServiceException("Invalid id",  new ErrorCode(ErrorCodeEnum.INVALID_INPUT.getCode()));
         }
 
         try {
-            return tagDao.deleteTag(tagId);
+            if (!tagDao.deleteTag(tagId)) {
+                LOGGER.error("Failed to delete tag");
+                throw new ServiceException("Failed to delete tag",
+                        new ErrorCode(ErrorCodeEnum.FAILED_TO_DELETE_TAG.getCode() + tagId));
+            }
         } catch (DataAccessException e) {
             LOGGER.error("Following exception was thrown in deleteTag(): " + e.getMessage());
             throw new ServiceException("Failed to delete tag",

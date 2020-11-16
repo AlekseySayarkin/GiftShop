@@ -108,9 +108,8 @@ public interface GiftCertificateService {
      *
      * @param giftCertificate {@code GiftCertificate} which to deleted from persistence layer.
      * @throws ServiceException when failed to delete {@code GiftCertificate} from persistence layer.
-     * @return whether transaction was successful.
      */
-    boolean deleteGiftCertificate(GiftCertificate giftCertificate) throws ServiceException;
+    void deleteGiftCertificate(GiftCertificate giftCertificate) throws ServiceException;
 
     /**
      * Updates {@code GiftCertificate} in persistence layer.
@@ -118,7 +117,6 @@ public interface GiftCertificateService {
      *
      * @param giftCertificate {@code GiftCertificate} which to update in persistence layer.
      * @throws ServiceException when failed to update {@code GiftCertificate} in persistence layer.
-     * @return whether transaction was successful.
      */
-    boolean updateGiftCertificate(GiftCertificate giftCertificate) throws ServiceException;
+    void updateGiftCertificate(GiftCertificate giftCertificate) throws ServiceException;
 }

@@ -1,7 +1,5 @@
 package com.epam.esm.controller;
 
-import com.epam.esm.dao.exception.ErrorCode;
-import com.epam.esm.dao.exception.ErrorCodeEnum;
 import com.epam.esm.model.Tag;
 import com.epam.esm.service.TagService;
 import com.epam.esm.service.exception.ServiceException;
@@ -38,12 +36,7 @@ public class TagController {
 
     @DeleteMapping("/tags/{id}")
     public HttpStatus deleteTag(@PathVariable int id) throws ServiceException {
-        if (tagService.deleteTag(id)) {
-            return HttpStatus.OK;
-        } else {
-            throw new ServiceException("Failed to delete tag",
-                    new ErrorCode(Integer.parseInt(
-                            ErrorCodeEnum.FAILED_TO_DELETE_TAG.getCode() + String.valueOf(id))));
-        }
+        tagService.deleteTag(id);
+        return HttpStatus.OK;
     }
 }

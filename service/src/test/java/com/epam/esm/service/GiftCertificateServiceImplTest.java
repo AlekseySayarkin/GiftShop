@@ -110,7 +110,7 @@ public class GiftCertificateServiceImplTest {
     }
 
     @Test
-    public void whenDeleteTag_thenReturnTrue() throws ServiceException {
+    public void whenDeleteTag_thenReturnTrue() {
         GiftCertificate giftCertificate = new GiftCertificate();
         giftCertificate.setId(1);
         giftCertificate.setName("Tourism");
@@ -122,12 +122,12 @@ public class GiftCertificateServiceImplTest {
         Tag tag = new Tag("spa");
         giftCertificate.getTags().add(tag);
 
-        Mockito.when(giftCertificateDAO.deleteCertificateTagRelation(
-                giftCertificate.getId(), tag.getId())).thenReturn(true);
-        Mockito.when(giftCertificateDAO.deleteGiftCertificate(giftCertificate.getId())).thenReturn(true);
-        boolean result = giftCertificateService.deleteGiftCertificate(giftCertificate);
+        try {
+            giftCertificateService.deleteGiftCertificate(giftCertificate);
+        } catch (ServiceException e) {
+            Assert.assertEquals("Failed to delete certificate", e.getMessage());
+        }
 
-        Assert.assertTrue(result);
         Mockito.verify(giftCertificateDAO).deleteCertificateTagRelation(giftCertificate.getId(), tag.getId());
         Mockito.verify(giftCertificateDAO).deleteGiftCertificate(giftCertificate.getId());
     }

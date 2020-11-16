@@ -58,7 +58,6 @@ public interface TagService {
      *
      * @param tagId id of a {@code Tag} which to delete from persistence layer.
      * @throws ServiceException when failed to delete {@code Tag} from persistence layer.
-     * @return whether transaction was successful.
      */
-    boolean deleteTag(int tagId) throws ServiceException;
+    void deleteTag(int tagId) throws ServiceException;
 }

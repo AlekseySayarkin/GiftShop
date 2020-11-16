@@ -1,6 +1,7 @@
 package com.epam.esm.service;
 
 import com.epam.esm.dao.TagDao;
+import com.epam.esm.dao.exception.ErrorCode;
 import com.epam.esm.dao.exception.PersistenceException;
 import com.epam.esm.dao.impl.SQLTagDaoImpl;
 import com.epam.esm.model.Tag;
@@ -85,13 +86,14 @@ public class TagServiceImpTest {
     }
 
     @Test
-    public void whenDeleteTag_thenReturnTrue() throws ServiceException {
+    public void whenDeleteTag_thenThrowAnException() {
         Tag tag = new Tag(1, "spa");
 
-        Mockito.when(tagDao.deleteTag(tag.getId())).thenReturn(true);
-        boolean result = tagService.deleteTag(tag.getId());
-
-        Assert.assertTrue(result);
+        try {
+            tagService.deleteTag(tag.getId());
+        } catch (ServiceException e) {
+            Assert.assertEquals("Failed to delete tag", e.getMessage());
+        }
         Mockito.verify(tagDao).deleteTag(tag.getId());
     }
 }

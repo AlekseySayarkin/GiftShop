@@ -189,14 +189,18 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     @Transactional
-    public boolean deleteGiftCertificate(GiftCertificate giftCertificate) throws ServiceException {
+    public void deleteGiftCertificate(GiftCertificate giftCertificate) throws ServiceException {
         CertificateValidator.validateCertificate(giftCertificate);
         try {
             for (Tag tag : giftCertificate.getTags()) {
                 giftCertificateDAO.deleteCertificateTagRelation(giftCertificate.getId(), tag.getId());
             }
 
-            return giftCertificateDAO.deleteGiftCertificate(giftCertificate.getId());
+            if (!giftCertificateDAO.deleteGiftCertificate(giftCertificate.getId())) {
+                LOGGER.error("Failed to delete certificate");
+                throw new ServiceException("Failed to delete certificate",
+                        new ErrorCode(ErrorCodeEnum.FAILED_TO_DELETE_CERTIFICATE.getCode() + giftCertificate.getId()));
+            }
         } catch (DataAccessException e) {
             LOGGER.error("Following exception was thrown in deleteGiftCertificate(): " + e.getMessage());
             throw new ServiceException("Failed to get certificate",
@@ -206,12 +210,16 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     @Transactional
-    public boolean updateGiftCertificate(GiftCertificate giftCertificate) throws ServiceException {
+    public void updateGiftCertificate(GiftCertificate giftCertificate) throws ServiceException {
         CertificateValidator.validateCertificate(giftCertificate);
         try {
             addNewTagsToCertificate(giftCertificate);
 
-            return giftCertificateDAO.updateGiftCertificate(giftCertificate);
+            if (!giftCertificateDAO.updateGiftCertificate(giftCertificate)) {
+                LOGGER.error("Failed to update certificate");
+                throw new ServiceException("Failed to update certificate",
+                        new ErrorCode(ErrorCodeEnum.FAILED_TO_DELETE_CERTIFICATE.getCode() + giftCertificate.getId()));
+            }
         } catch (DataAccessException e) {
             LOGGER.error("Following exception was thrown in updateGiftCertificate(): " + e.getMessage());
             throw new ServiceException("Failed to get certificate",

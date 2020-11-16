@@ -1,5 +1,6 @@
 package com.epam.esm.controller;
 
+import com.epam.esm.CertificateRequestBody;
 import com.epam.esm.dao.exception.ErrorCode;
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.service.GiftCertificateService;
@@ -26,8 +27,8 @@ public class CertificateController {
     }
 
     @GetMapping("/certificates")
-    public List<GiftCertificate> getGiftCertificates(@RequestBody(required = false) String request)
-            throws ServiceException {
+    public List<GiftCertificate> getGiftCertificates(
+            @RequestBody(required = false) CertificateRequestBody request) throws ServiceException {
         if (request != null) {
            return getCertificates(request);
         } else {
@@ -35,16 +36,15 @@ public class CertificateController {
         }
     }
 
-    private List<GiftCertificate> getCertificates(String request) throws ServiceException {
-        JSONObject jsonObject = new JSONObject(request);
-        if (jsonObject.has("content")) {
-            return giftCertificateService.getAllGiftCertificates(jsonObject.getString("content"));
+    private List<GiftCertificate> getCertificates(CertificateRequestBody requestBody) throws ServiceException {
+        if (requestBody.getContent() != null) {
+            return giftCertificateService.getAllGiftCertificates(requestBody.getContent());
         }
-        if (jsonObject.has("sort")) {
-            return getSortedCertificates(jsonObject.getString("sort"));
+        if (requestBody.getSort() != null) {
+            return getSortedCertificates(requestBody.getSort());
         }
-        if (jsonObject.has("tagName")) {
-            return giftCertificateService.getGiftCertificateByTagName(jsonObject.getString("tagName"));
+        if (requestBody.getTagName() != null) {
+            return giftCertificateService.getGiftCertificateByTagName(requestBody.getTagName());
         }
         throw new ServiceException("Wrong request input", new ErrorCode(SORT_INPUT_ERROR_CODE));
     }

@@ -7,12 +7,16 @@ import com.epam.esm.model.Tag;
 import com.epam.esm.service.TagService;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.util.TagValidator;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 
 import java.util.List;
 
 public class TagServiceImp implements TagService {
+
+    private static final Logger LOGGER = LogManager.getLogger(TagServiceImp.class);
 
     private final TagDao tagDao;
 
@@ -35,6 +39,7 @@ public class TagServiceImp implements TagService {
         try {
             return tagDao.getTag(name);
         } catch (DataAccessException e) {
+            LOGGER.error("Following exception was thrown in getTag(String name): " + e.getMessage());
             throw new ServiceException("Failed to get tag", new ErrorCode(FAILED_TO_GET));
         }
     }
@@ -48,6 +53,7 @@ public class TagServiceImp implements TagService {
         try {
             return tagDao.getTag(id);
         } catch (DataAccessException e) {
+            LOGGER.error("Following exception was thrown in getTag(int id): " + e.getMessage());
             throw new ServiceException("Failed to get tag", new ErrorCode(FAILED_TO_GET));
         }
     }
@@ -57,6 +63,7 @@ public class TagServiceImp implements TagService {
         try {
             return tagDao.getAllTags();
         } catch (DataAccessException e) {
+            LOGGER.error("Following exception was thrown in getAllTags(): " + e.getMessage());
             throw new ServiceException("Failed to get tags", new ErrorCode(FAILED_TO_GET));
         }
     }
@@ -67,8 +74,10 @@ public class TagServiceImp implements TagService {
         try {
             return tagDao.addTag(tag);
         } catch (DataAccessException e) {
+            LOGGER.error("Following exception was thrown in addTag(): " + e.getMessage());
             throw new ServiceException("Failed to add tag", new ErrorCode(FAILED_TO_ADD));
         } catch (PersistenceException e) {
+            LOGGER.error("Following exception was thrown in addTag(): " + e.getMessage());
             throw new ServiceException("Unable to ged tag id", new ErrorCode(FAILED_TO_ADD));
         }
     }
@@ -82,6 +91,7 @@ public class TagServiceImp implements TagService {
         try {
             return tagDao.deleteTag(tagId);
         } catch (DataAccessException e) {
+            LOGGER.error("Following exception was thrown in deleteTag(): " + e.getMessage());
             throw new ServiceException("Failed to delete tag", new ErrorCode(FAILED_TO_DELETE + tagId));
         }
     }

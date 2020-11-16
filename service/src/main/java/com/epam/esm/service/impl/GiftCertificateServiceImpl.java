@@ -9,6 +9,8 @@ import com.epam.esm.model.Tag;
 import com.epam.esm.service.GiftCertificateService;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.util.CertificateValidator;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 public class GiftCertificateServiceImpl implements GiftCertificateService {
+
+    private static final Logger LOGGER = LogManager.getLogger(GiftCertificateServiceImpl.class);
 
     private final GiftCertificateDAO giftCertificateDAO;
     private final TagDao tagDao;
@@ -41,6 +45,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         try {
             return giftCertificateDAO.getGiftCertificate(name);
         } catch (DataAccessException e) {
+            LOGGER.error("Following exception was thrown in getGiftCertificate(String name): " + e.getMessage());
             throw new ServiceException("Failed to get certificate", new ErrorCode(FAILED_TO_GET));
         }
     }
@@ -54,6 +59,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         try {
             return giftCertificateDAO.getGiftCertificate(id);
         } catch (DataAccessException e) {
+            LOGGER.error("Following exception was thrown in getGiftCertificate(int id): " + e.getMessage());
             throw new ServiceException("Failed to get certificate", new ErrorCode(FAILED_TO_GET));
         }
     }
@@ -63,6 +69,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         try {
             return giftCertificateDAO.getAllGiftCertificates();
         } catch (DataAccessException e) {
+            LOGGER.error("Following exception was thrown in getAllGiftCertificates(): " + e.getMessage());
             throw new ServiceException("Failed to get certificate",  new ErrorCode(INVALID_INPUT));
         }
     }
@@ -76,6 +83,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         try {
             return giftCertificateDAO.getAllGiftCertificates(content);
         } catch (DataAccessException e) {
+            LOGGER.error("Following exception was thrown in getAllGiftCertificates(String content): " + e.getMessage());
             throw new ServiceException("Failed to get certificate", new ErrorCode(FAILED_TO_GET));
         }
     }
@@ -89,6 +97,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         try {
             return giftCertificateDAO.getGiftCertificateByTagName(tagName);
         } catch (DataAccessException e) {
+            LOGGER.error("Following exception was thrown in getGiftCertificateByTagName(): " + e.getMessage());
             throw new ServiceException("Failed to get certificate", new ErrorCode(FAILED_TO_GET));
         }
     }
@@ -99,6 +108,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         try {
             return giftCertificateDAO.getAllGiftCertificatesSortedByName(isAscending);
         } catch (DataAccessException e) {
+            LOGGER.error("Following exception was thrown in getAllGiftCertificatesSortedByName(): " + e.getMessage());
             throw new ServiceException("Failed to get certificate", new ErrorCode(FAILED_TO_GET));
         }
     }
@@ -109,6 +119,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         try {
             return giftCertificateDAO.getAllGiftCertificatesSortedByDate(isAscending);
         } catch (DataAccessException e) {
+            LOGGER.error("Following exception was thrown in getAllGiftCertificatesSortedByDate(): " + e.getMessage());
             throw new ServiceException("Failed to get certificate", new ErrorCode(FAILED_TO_GET));
         }
     }
@@ -124,8 +135,10 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
             return giftCertificate.getId();
         } catch (DataAccessException e) {
+            LOGGER.error("Following exception was thrown in addGiftCertificate(): " + e.getMessage());
             throw new ServiceException("Failed to get certificate", new ErrorCode(FAILED_TO_ADD));
         } catch (PersistenceException e) {
+            LOGGER.error("Following exception was thrown: " + e.getMessage());
             throw new ServiceException("Failed to return certificate id", new ErrorCode(FAILED_TO_ADD));
         }
     }
@@ -141,6 +154,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
             return giftCertificateDAO.deleteGiftCertificate(giftCertificate.getId());
         } catch (DataAccessException e) {
+            LOGGER.error("Following exception was thrown in deleteGiftCertificate(): " + e.getMessage());
             throw new ServiceException("Failed to get certificate",
                     new ErrorCode(FAILED_TO_DELETE + giftCertificate.getId()));
         }
@@ -155,10 +169,11 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
             return giftCertificateDAO.updateGiftCertificate(giftCertificate);
         } catch (DataAccessException e) {
-            e.printStackTrace();
+            LOGGER.error("Following exception was thrown in updateGiftCertificate(): " + e.getMessage());
             throw new ServiceException("Failed to get certificate",
                     new ErrorCode(FAILED_TO_UPDATE + giftCertificate.getId()));
         } catch (PersistenceException e) {
+            LOGGER.error("Following exception was thrown in updateGiftCertificate(): " + e.getMessage());
             throw new ServiceException("Failed to return certificate id",
                     new ErrorCode(FAILED_TO_UPDATE + giftCertificate.getId()));
         }

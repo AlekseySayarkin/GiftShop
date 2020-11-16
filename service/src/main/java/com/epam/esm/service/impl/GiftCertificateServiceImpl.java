@@ -23,17 +23,11 @@ import java.util.List;
 public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     private enum SortParameter {
-        DATE(),
-        NAME();
-
-        SortParameter(){}
+        DATE, NAME
     }
 
     private enum SortType {
-        ASC(),
-        DESC();
-
-        SortType(){}
+        ASC, DESC
     }
 
     private static final Logger LOGGER = LogManager.getLogger(GiftCertificateServiceImpl.class);

@@ -1,6 +1,7 @@
 package com.epam.esm.controller;
 
-import com.epam.esm.exception.WebException;
+import com.epam.esm.service.exception.ServiceException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -8,8 +9,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class ExceptionHandlerController {
 
-    @ExceptionHandler(WebException.class)
-    public ResponseEntity<WebException> handleServiceException(WebException exception) {
-        return new ResponseEntity<>(exception, exception.getHttpStatus());
+    @ExceptionHandler(ServiceException.class)
+    public ResponseEntity<ServiceException> handleServiceException(ServiceException exception) {
+        return new ResponseEntity<>(exception, HttpStatus.BAD_REQUEST);
     }
 }

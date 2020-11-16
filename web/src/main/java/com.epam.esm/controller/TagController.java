@@ -1,7 +1,6 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.dao.exception.ErrorCode;
-import com.epam.esm.exception.WebException;
 import com.epam.esm.model.Tag;
 import com.epam.esm.service.TagService;
 import com.epam.esm.service.exception.ServiceException;
@@ -24,54 +23,33 @@ public class TagController {
     }
 
     @GetMapping(value = "/tags")
-    public List<Tag> getTags() {
-        try {
-            return tagService.getAllTags();
-        } catch (ServiceException e) {
-            throw new WebException("Tags not found", e.getErrorCode(), HttpStatus.NOT_FOUND);
-        }
+    public List<Tag> getTags() throws ServiceException {
+        return tagService.getAllTags();
     }
 
     @GetMapping("/tags/{id}")
-    public Tag getTag(@PathVariable int id) {
-        try {
-            return tagService.getTag(id);
-        } catch (ServiceException e) {
-            throw new WebException("Tag not found", e.getErrorCode(), HttpStatus.NOT_FOUND);
-        }
+    public Tag getTag(@PathVariable int id) throws ServiceException {
+        return tagService.getTag(id);
     }
 
     @GetMapping("/tags/name")
-    public Tag findByName(@RequestBody String name) {
-        try {
-            return tagService.getTag(new JSONObject(name).getString("name"));
-        } catch (ServiceException e) {
-            throw new WebException("Tag not found", e.getErrorCode(), HttpStatus.NOT_FOUND);
-        }
+    public Tag findByName(@RequestBody String name) throws ServiceException {
+        return tagService.getTag(new JSONObject(name).getString("name"));
     }
 
     @PostMapping("/tags")
-    public Tag addTag(@RequestBody Tag tag) {
-        try {
-            tag.setId(tagService.addTag(tag));
-            return tag;
-        } catch (ServiceException e) {
-            throw new WebException("Failed to add tag", e.getErrorCode(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public Tag addTag(@RequestBody Tag tag) throws ServiceException {
+        tag.setId(tagService.addTag(tag));
+        return tag;
     }
 
     @DeleteMapping("/tags/{id}")
-    public HttpStatus deleteTag(@PathVariable int id) {
-        try {
-            if (tagService.deleteTag(id)) {
-                return HttpStatus.OK;
-            } else {
-                throw new WebException("Failed to delete tag",
-                        new ErrorCode(Integer.parseInt(FAILED_TO_DELETE + String.valueOf(id))),
-                        HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-        } catch (ServiceException e) {
-            throw new WebException("Failed to delete tag", e.getErrorCode(), HttpStatus.INTERNAL_SERVER_ERROR);
+    public HttpStatus deleteTag(@PathVariable int id) throws ServiceException {
+        if (tagService.deleteTag(id)) {
+            return HttpStatus.OK;
+        } else {
+            throw new ServiceException("Failed to delete tag",
+                    new ErrorCode(Integer.parseInt(FAILED_TO_DELETE + String.valueOf(id))));
         }
     }
 }

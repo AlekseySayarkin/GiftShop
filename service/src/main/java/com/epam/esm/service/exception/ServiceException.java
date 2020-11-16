@@ -1,7 +1,9 @@
 package com.epam.esm.service.exception;
 
 import com.epam.esm.dao.exception.ErrorCode;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+@JsonIgnoreProperties(value = {"stackTrace", "cause", "suppressed", "localizedMessage"}, allowSetters = true)
 public class ServiceException extends Exception {
 
     private final ErrorCode errorCode;

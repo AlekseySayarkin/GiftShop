@@ -11,6 +11,7 @@ import com.epam.esm.dao.exception.ErrorCodeEnum;
 import com.epam.esm.service.GiftCertificateService;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.util.CertificateValidator;
+import org.apache.commons.lang3.EnumUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,20 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 public class GiftCertificateServiceImpl implements GiftCertificateService {
+
+    private enum SortParameter {
+        DATE(),
+        NAME();
+
+        SortParameter(){}
+    }
+
+    private enum SortType {
+        ASC(),
+        DESC();
+
+        SortType(){}
+    }
 
     private static final Logger LOGGER = LogManager.getLogger(GiftCertificateServiceImpl.class);
 
@@ -143,14 +158,17 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     private List<GiftCertificate> getSortedCertificates(String sort) throws ServiceException {
         int separator = sort.indexOf(".");
         if (separator != -1 && separator < sort.length()) {
-            String sortBy = sort.substring(0 , separator);
-            String sortType = sort.substring(++separator);
+            String sortBy = sort.substring(0 , separator).toUpperCase();
+            String sortType = sort.substring(++separator).toUpperCase();
 
-            return switch (sortBy) {
-                case "date" -> getAllGiftCertificatesSortedByDate(isAscending(sortType));
-                case "name" -> getAllGiftCertificatesSortedByName(isAscending(sortType));
-                default -> throw new ServiceException("Wrong sort input",
+            if (!EnumUtils.isValidEnum(SortParameter.class, sortBy)) {
+                throw new ServiceException("Wrong sort input",
                         new ErrorCode(ErrorCodeEnum.INVALID_SORT_INPUT.getCode()));
+            }
+
+            return switch (SortParameter.valueOf(sortBy)) {
+                case DATE -> getAllGiftCertificatesSortedByDate(isAscending(sortType));
+                case NAME -> getAllGiftCertificatesSortedByName(isAscending(sortType));
             };
         } else {
             throw new ServiceException("Wrong sort input", new ErrorCode(ErrorCodeEnum.INVALID_SORT_INPUT.getCode()));
@@ -158,11 +176,14 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     private boolean isAscending(String sort) throws ServiceException {
-        return switch (sort) {
-            case "asc" -> true;
-            case "desc" -> false;
-            default -> throw new ServiceException("Wrong sort input",
+        if (!EnumUtils.isValidEnum(SortType.class, sort)) {
+            throw new ServiceException("Wrong sort input",
                     new ErrorCode(ErrorCodeEnum.INVALID_SORT_INPUT.getCode()));
+        }
+
+        return switch (SortType.valueOf(sort)) {
+            case ASC -> true;
+            case DESC -> false;
         };
     }
 

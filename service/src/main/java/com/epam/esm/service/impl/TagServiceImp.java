@@ -2,6 +2,7 @@ package com.epam.esm.service.impl;
 
 import com.epam.esm.dao.TagDao;
 import com.epam.esm.dao.exception.ErrorCode;
+import com.epam.esm.dao.exception.ErrorCodeEnum;
 import com.epam.esm.dao.exception.PersistenceException;
 import com.epam.esm.model.Tag;
 import com.epam.esm.service.TagService;
@@ -20,11 +21,6 @@ public class TagServiceImp implements TagService {
 
     private final TagDao tagDao;
 
-    private static final int INVALID_INPUT = 40401;
-    private static final int FAILED_TO_GET = 50101;
-    private static final int FAILED_TO_ADD = 50201;
-    private static final int FAILED_TO_DELETE = 503;
-
     @Autowired
     public TagServiceImp(TagDao tagDao) {
         this.tagDao = tagDao;
@@ -33,28 +29,30 @@ public class TagServiceImp implements TagService {
     @Override
     public Tag getTag(String name) throws ServiceException {
         if (name == null || name.isEmpty()) {
-            throw new ServiceException("Invalid name", new ErrorCode(INVALID_INPUT));
+            throw new ServiceException("Invalid name", new ErrorCode(ErrorCodeEnum.INVALID_INPUT.getCode()));
         }
 
         try {
             return tagDao.getTag(name);
         } catch (DataAccessException e) {
             LOGGER.error("Following exception was thrown in getTag(String name): " + e.getMessage());
-            throw new ServiceException("Failed to get tag", new ErrorCode(FAILED_TO_GET));
+            throw new ServiceException("Failed to get tag",
+                    new ErrorCode(ErrorCodeEnum.FAILED_TO_RETRIEVE_TAG.getCode()));
         }
     }
 
     @Override
     public Tag getTag(int id) throws ServiceException {
         if (id <= 0) {
-            throw new ServiceException("Invalid id", new ErrorCode(INVALID_INPUT));
+            throw new ServiceException("Invalid id", new ErrorCode(ErrorCodeEnum.INVALID_INPUT.getCode()));
         }
 
         try {
             return tagDao.getTag(id);
         } catch (DataAccessException e) {
             LOGGER.error("Following exception was thrown in getTag(int id): " + e.getMessage());
-            throw new ServiceException("Failed to get tag", new ErrorCode(FAILED_TO_GET));
+            throw new ServiceException("Failed to get tag",
+                    new ErrorCode(ErrorCodeEnum.FAILED_TO_RETRIEVE_TAG.getCode()));
         }
     }
 
@@ -64,7 +62,8 @@ public class TagServiceImp implements TagService {
             return tagDao.getAllTags();
         } catch (DataAccessException e) {
             LOGGER.error("Following exception was thrown in getAllTags(): " + e.getMessage());
-            throw new ServiceException("Failed to get tags", new ErrorCode(FAILED_TO_GET));
+            throw new ServiceException("Failed to get tags",
+                    new ErrorCode(ErrorCodeEnum.FAILED_TO_RETRIEVE_TAG.getCode()));
         }
     }
 
@@ -75,24 +74,26 @@ public class TagServiceImp implements TagService {
             return tagDao.addTag(tag);
         } catch (DataAccessException e) {
             LOGGER.error("Following exception was thrown in addTag(): " + e.getMessage());
-            throw new ServiceException("Failed to add tag", new ErrorCode(FAILED_TO_ADD));
+            throw new ServiceException("Failed to add tag", new ErrorCode(ErrorCodeEnum.FAILED_TO_ADD_TAG.getCode()));
         } catch (PersistenceException e) {
             LOGGER.error("Following exception was thrown in addTag(): " + e.getMessage());
-            throw new ServiceException("Unable to ged tag id", new ErrorCode(FAILED_TO_ADD));
+            throw new ServiceException("Unable to ged tag id",
+                    new ErrorCode(ErrorCodeEnum.FAILED_TO_ADD_TAG.getCode()));
         }
     }
 
     @Override
     public boolean deleteTag(int tagId) throws ServiceException {
         if (tagId <= 0) {
-            throw new ServiceException("Invalid id", new ErrorCode(INVALID_INPUT));
+            throw new ServiceException("Invalid id",  new ErrorCode(ErrorCodeEnum.INVALID_INPUT.getCode()));
         }
 
         try {
             return tagDao.deleteTag(tagId);
         } catch (DataAccessException e) {
             LOGGER.error("Following exception was thrown in deleteTag(): " + e.getMessage());
-            throw new ServiceException("Failed to delete tag", new ErrorCode(FAILED_TO_DELETE + tagId));
+            throw new ServiceException("Failed to delete tag",
+                    new ErrorCode(ErrorCodeEnum.FAILED_TO_DELETE_TAG.getCode() + tagId));
         }
     }
 }

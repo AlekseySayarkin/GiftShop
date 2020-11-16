@@ -85,6 +85,16 @@ public interface GiftCertificateService {
     List<GiftCertificate> getAllGiftCertificatesSortedByDate(boolean isAscending) throws ServiceException;
 
     /**
+     * Retrieves {@code GiftCertificate} from persistence layer
+     * using one of non null fields of {@code CertificateRequestBody}.
+     *
+     * @param requestBody representation of http request body.
+     * @throws ServiceException when failed to get {@code GiftCertificate} from persistence layer.
+     * @return List<GiftCertificate> - certificates from persistence layer.
+     */
+    List<GiftCertificate> getGiftCertificates(CertificateRequestBody requestBody) throws ServiceException;
+
+    /**
      * Adds new {@code GiftCertificate} to persistence layer.
      *
      * @param giftCertificate {@code GiftCertificate} which to be added to persistence layer.

@@ -4,7 +4,6 @@ import com.epam.esm.dao.exception.ErrorCode;
 import com.epam.esm.model.Tag;
 import com.epam.esm.service.TagService;
 import com.epam.esm.service.exception.ServiceException;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -30,11 +29,6 @@ public class TagController {
     @GetMapping("/tags/{id}")
     public Tag getTag(@PathVariable int id) throws ServiceException {
         return tagService.getTag(id);
-    }
-
-    @GetMapping("/tags/name")
-    public Tag findByName(@RequestBody String name) throws ServiceException {
-        return tagService.getTag(new JSONObject(name).getString("name"));
     }
 
     @PostMapping("/tags")

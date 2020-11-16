@@ -2,6 +2,7 @@ package com.epam.esm.dao.impl;
 
 import com.epam.esm.dao.GiftCertificateDAO;
 import com.epam.esm.dao.exception.ErrorCode;
+import com.epam.esm.dao.exception.ErrorCodeEnum;
 import com.epam.esm.dao.exception.PersistenceException;
 import com.epam.esm.model.GiftCertificate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,8 +80,6 @@ public class SQLGiftCertificateDaoImpl implements GiftCertificateDAO {
 
     private static final String SQL_DELETE_JOIN =
             "delete from CertificateDetails where (CertificateID = ? and TagID = ?)";
-
-    private static final int FAILED_TO_ADD_CERTIFICATE_ERROR_CODE = 50120;
 
     private final JdbcTemplate jdbcTemplate;
     private final ResultSetExtractor<List<GiftCertificate>> extractor;
@@ -160,7 +159,7 @@ public class SQLGiftCertificateDaoImpl implements GiftCertificateDAO {
 
         if (holder.getKey() == null) {
             throw new PersistenceException("Failed to add GiftCertificate",
-                    new ErrorCode(FAILED_TO_ADD_CERTIFICATE_ERROR_CODE));
+                    new ErrorCode(ErrorCodeEnum.FAILED_TO_ADD_CERTIFICATE.getCode()));
         }
 
         return holder.getKey().intValue();

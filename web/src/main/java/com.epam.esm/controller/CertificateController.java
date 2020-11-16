@@ -1,5 +1,6 @@
 package com.epam.esm.controller;
 
+import com.epam.esm.dao.exception.ErrorCodeEnum;
 import com.epam.esm.service.CertificateRequestBody;
 import com.epam.esm.dao.exception.ErrorCode;
 import com.epam.esm.model.GiftCertificate;
@@ -13,9 +14,6 @@ import java.util.List;
 
 @RestController
 public class CertificateController {
-
-    private static final int FAILED_TO_DELETE = 503;
-    private static final int FAILED_TO_UPDATE = 504;
 
     private final GiftCertificateService giftCertificateService;
 
@@ -50,8 +48,9 @@ public class CertificateController {
         if (giftCertificateService.deleteGiftCertificate(giftCertificate)) {
             return HttpStatus.OK;
         } else {
-            throw new ServiceException(new ErrorCode(
-                    Integer.parseInt(FAILED_TO_DELETE + String.valueOf(giftCertificate.getId()))));
+            throw new ServiceException("Failed to delete certificate",
+                    new ErrorCode(Integer.parseInt(ErrorCodeEnum.FAILED_TO_DELETE_CERTIFICATE.getCode()
+                            + String.valueOf(giftCertificate.getId()))));
         }
     }
 
@@ -61,7 +60,8 @@ public class CertificateController {
             return HttpStatus.OK;
         } else {
             throw new ServiceException("Failed to update certificate",
-                    new ErrorCode(Integer.parseInt(FAILED_TO_UPDATE + String.valueOf(giftCertificate.getId()))));
+                    new ErrorCode(Integer.parseInt(ErrorCodeEnum.FAILED_TO_UPDATE_CERTIFICATE.getCode()
+                            + String.valueOf(giftCertificate.getId()))));
         }
     }
 }

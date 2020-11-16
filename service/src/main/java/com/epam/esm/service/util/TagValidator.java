@@ -12,15 +12,15 @@ public class TagValidator {
 
     public static void validateTag(Tag tag) throws ServiceException {
         if (tag == null || tag.getId() < 0) {
-            throw new ServiceException(new ErrorCode(ErrorCodeEnum.TAG_VALIDATION_ERROR.getCode()));
+            throw new ServiceException("Invalid tag", new ErrorCode(ErrorCodeEnum.TAG_VALIDATION_ERROR.getCode()));
         }
 
         if (!isValidName(tag.getName())) {
-            throw new ServiceException(new ErrorCode(ErrorCodeEnum.TAG_VALIDATION_ERROR.getCode()));
+            throw new ServiceException("Invalid tag", new ErrorCode(ErrorCodeEnum.TAG_VALIDATION_ERROR.getCode()));
         }
     }
 
     private static boolean isValidName(String name) {
-        return name != null && name.isEmpty();
+        return name != null && !name.isEmpty();
     }
 }

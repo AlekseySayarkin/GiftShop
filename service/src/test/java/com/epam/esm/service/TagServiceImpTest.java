@@ -1,7 +1,6 @@
 package com.epam.esm.service;
 
 import com.epam.esm.dao.TagDao;
-import com.epam.esm.dao.exception.ErrorCode;
 import com.epam.esm.dao.exception.PersistenceException;
 import com.epam.esm.dao.impl.SQLTagDaoImpl;
 import com.epam.esm.model.Tag;

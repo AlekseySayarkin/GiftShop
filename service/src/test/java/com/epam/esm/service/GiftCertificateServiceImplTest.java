@@ -66,8 +66,8 @@ public class GiftCertificateServiceImplTest {
             expected.add(certificate);
         }
 
-        Mockito.when(giftCertificateService.getGiftCertificatesByContent()).thenReturn(expected);
-        actual = giftCertificateService.getGiftCertificatesByContent();
+        Mockito.when(giftCertificateService.geAllCertificatesByContent()).thenReturn(expected);
+        actual = giftCertificateService.geAllCertificatesByContent();
 
         Assert.assertEquals(expected, actual);
         Mockito.verify(giftCertificateDAO).getAllGiftCertificates();
@@ -146,14 +146,14 @@ public class GiftCertificateServiceImplTest {
             expected.add(certificate);
         }
 
-        requestBody.setSort("date.asc");
+        requestBody.setSortType("date.asc");
         Mockito.when(giftCertificateDAO.getAllGiftCertificatesSortedByDate(true)).thenReturn(expected);
 
         actual = giftCertificateService.getGiftCertificates(requestBody);
         Assert.assertEquals(expected, actual);
         Mockito.verify(giftCertificateDAO).getAllGiftCertificatesSortedByDate(true);
 
-        requestBody.setSort(null);
+        requestBody.setSortType(null);
         requestBody.setContent("Tag");
         Mockito.when(giftCertificateDAO.getAllGiftCertificates(requestBody.getContent())).thenReturn(expected);
         actual = giftCertificateService.getGiftCertificates(requestBody);

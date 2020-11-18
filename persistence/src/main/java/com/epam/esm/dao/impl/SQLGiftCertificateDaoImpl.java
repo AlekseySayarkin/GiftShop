@@ -161,7 +161,8 @@ public class SQLGiftCertificateDaoImpl implements GiftCertificateDAO {
         }, holder);
 
         if (holder.getKey() == null) {
-            throw new PersistenceException("Failed to add GiftCertificate", ErrorCodeEnum.FAILED_TO_ADD_CERTIFICATE);
+            throw new PersistenceException("Failed to add GiftCertificate to DB",
+                    ErrorCodeEnum.FAILED_TO_ADD_CERTIFICATE);
         }
 
         return holder.getKey().intValue();

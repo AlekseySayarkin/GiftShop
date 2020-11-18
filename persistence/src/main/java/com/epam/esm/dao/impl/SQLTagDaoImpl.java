@@ -55,7 +55,7 @@ public class SQLTagDaoImpl implements TagDao {
         }, holder);
 
         if (holder.getKey() == null) {
-            throw new PersistenceException("Failed to add Tag", ErrorCodeEnum.FAILED_TO_ADD_TAG);
+            throw new PersistenceException("Failed to add Tag to DB", ErrorCodeEnum.FAILED_TO_ADD_TAG);
         }
 
         return holder.getKey().intValue();

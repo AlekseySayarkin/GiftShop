@@ -41,7 +41,7 @@ public interface GiftCertificateService {
      * @throws ServiceException when failed to get {@code GiftCertificate} from persistence layer.
      * @return List<GiftCertificate> - all existing certificates in persistence layer.
      */
-    List<GiftCertificate> getGiftCertificatesByContent() throws ServiceException;
+    List<GiftCertificate> geAllCertificatesByContent() throws ServiceException;
 
     /**
      * Retrieves {@code GiftCertificate} from persistence layer

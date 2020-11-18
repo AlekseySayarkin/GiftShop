@@ -12,44 +12,66 @@ public class CertificateValidator {
     }
 
     public static void validateCertificate(GiftCertificate giftCertificate) throws ServiceException {
-        if (giftCertificate == null || giftCertificate.getId() < 0) {
-            throw new ServiceException("Invalid certificate", ErrorCodeEnum.CERTIFICATE_VALIDATION_ERROR);
+        if (giftCertificate == null) {
+            throw new ServiceException("Failed to validate: certificate is empty",
+                    ErrorCodeEnum.CERTIFICATE_VALIDATION_ERROR);
         }
-        if (!isValidName(giftCertificate.getName()) || !isValidDescription(giftCertificate.getDescription())) {
-            throw new ServiceException("Invalid certificate", ErrorCodeEnum.CERTIFICATE_VALIDATION_ERROR);
-        }
-        if (!isValidPrice(giftCertificate.getPrice())) {
-            throw new ServiceException("Invalid certificate", ErrorCodeEnum.CERTIFICATE_VALIDATION_ERROR);
-        }
-        if (!isValidCreateAndUpdateDates(giftCertificate.getCreateDate(), giftCertificate.getLastUpdateDate())) {
-            throw new ServiceException("Invalid certificate", ErrorCodeEnum.CERTIFICATE_VALIDATION_ERROR);
-        }
-        if(!isValidDuration(giftCertificate.getDuration())) {
-            throw new ServiceException("Invalid certificate", ErrorCodeEnum.CERTIFICATE_VALIDATION_ERROR);
+
+        validateId(giftCertificate.getId());
+        validateName(giftCertificate.getName());
+        validateDescription(giftCertificate.getDescription());
+        validatePrice(giftCertificate.getPrice());
+        validateCreateAndUpdateDates(giftCertificate.getCreateDate(), giftCertificate.getLastUpdateDate());
+        validateDuration(giftCertificate.getDuration());
+    }
+
+    public static void validateId(int id) throws ServiceException {
+        if (id < 0) {
+            throw new ServiceException("Failed to validate: certificate id is negative",
+                    ErrorCodeEnum.CERTIFICATE_VALIDATION_ERROR);
         }
     }
 
-    private static boolean isValidName(String name) {
-        return name != null && !name.isEmpty();
-    }
-
-    private static boolean isValidDescription(String description) {
-        return description != null && !description.isEmpty();
-    }
-
-    private static boolean isValidPrice(double price) {
-        return price > 0;
-    }
-
-    private static boolean isValidCreateAndUpdateDates(ZonedDateTime createDate, ZonedDateTime updateDate) {
-        if (createDate != null && updateDate != null) {
-            return createDate.isBefore(updateDate) || createDate.equals(updateDate);
+    public static void validateName(String name) throws ServiceException {
+        if (name == null || name.isEmpty()) {
+            throw new ServiceException("Failed to validate: certificate name is empty",
+                    ErrorCodeEnum.CERTIFICATE_VALIDATION_ERROR);
         }
-
-        return true;
     }
 
-    private static boolean isValidDuration(int duration) {
-        return duration > 0;
+    public static void validateDescription(String description) throws ServiceException {
+        if (description == null || description.isEmpty()) {
+            throw new ServiceException("Failed to validate: certificate description is empty",
+                    ErrorCodeEnum.CERTIFICATE_VALIDATION_ERROR);
+        }
+    }
+
+    private static void validatePrice(double price) throws ServiceException{
+        if (price < 0) {
+            throw new ServiceException("Failed to validate: certificate price is negative",
+                    ErrorCodeEnum.CERTIFICATE_VALIDATION_ERROR);
+        }
+    }
+
+    private static void validateCreateAndUpdateDates(ZonedDateTime createDate, ZonedDateTime updateDate)
+            throws ServiceException {
+        if (createDate == null && updateDate == null) {
+            return;
+        }
+        if (createDate == null) {
+            throw new ServiceException("Failed to validate: certificate create date is null while update date isn't",
+                    ErrorCodeEnum.CERTIFICATE_VALIDATION_ERROR);
+        }
+        if (updateDate.isBefore(createDate)) {
+            throw new ServiceException("Failed to validate: certificate update date is before create date",
+                    ErrorCodeEnum.CERTIFICATE_VALIDATION_ERROR);
+        }
+    }
+
+    private static void validateDuration(int duration) throws ServiceException {
+        if (duration < 0) {
+            throw new ServiceException("Failed to validate: certificate price is negative",
+                    ErrorCodeEnum.CERTIFICATE_VALIDATION_ERROR);
+        }
     }
 }

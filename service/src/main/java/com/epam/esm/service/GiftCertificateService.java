@@ -2,6 +2,7 @@ package com.epam.esm.service;
 
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.service.exception.ServiceException;
+import com.epam.esm.service.request.CertificateRequestBody;
 
 import java.util.List;
 

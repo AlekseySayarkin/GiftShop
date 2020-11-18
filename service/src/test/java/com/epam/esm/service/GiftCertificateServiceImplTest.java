@@ -9,6 +9,9 @@ import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.model.Tag;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.impl.GiftCertificateServiceImpl;
+import com.epam.esm.service.request.CertificateRequestBody;
+import com.epam.esm.service.request.SortParameter;
+import com.epam.esm.service.request.SortType;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -146,7 +149,8 @@ public class GiftCertificateServiceImplTest {
             expected.add(certificate);
         }
 
-        requestBody.setSortType("date.asc");
+        requestBody.setSortType(SortType.ASC);
+        requestBody.setSortBy(SortParameter.DATE);
         Mockito.when(giftCertificateDAO.getAllGiftCertificatesSortedByDate(true)).thenReturn(expected);
 
         actual = giftCertificateService.getGiftCertificates(requestBody);

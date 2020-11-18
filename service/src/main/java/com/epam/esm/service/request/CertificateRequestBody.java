@@ -1,16 +1,16 @@
-package com.epam.esm.service;
+package com.epam.esm.service.request;
 
 public class CertificateRequestBody {
 
     private String content;
-    private String sortType;
-    private String sortBy;
+    private SortType sortType;
+    private SortParameter sortBy;
     private String tagName;
 
     public CertificateRequestBody() {
     }
 
-    public CertificateRequestBody(String content, String sortType, String sortBy, String tagName) {
+    public CertificateRequestBody(String content, SortType sortType, SortParameter sortBy, String tagName) {
         this.content = content;
         this.sortType = sortType;
         this.sortBy = sortBy;
@@ -25,19 +25,19 @@ public class CertificateRequestBody {
         this.content = content;
     }
 
-    public String getSortType() {
+    public SortType getSortType() {
         return sortType;
     }
 
-    public void setSortType(String sortType) {
+    public void setSortType(SortType sortType) {
         this.sortType = sortType;
     }
 
-    public String getSortBy() {
+    public SortParameter getSortBy() {
         return sortBy;
     }
 
-    public void setSortBy(String sortBy) {
+    public void setSortBy(SortParameter sortBy) {
         this.sortBy = sortBy;
     }
 

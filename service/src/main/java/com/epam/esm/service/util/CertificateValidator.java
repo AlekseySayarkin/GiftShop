@@ -69,7 +69,7 @@ public class CertificateValidator {
     }
 
     private static void validateDuration(int duration) throws ServiceException {
-        if (duration < 0) {
+        if (duration <= 0) {
             throw new ServiceException("Failed to validate: certificate price is negative",
                     ErrorCodeEnum.CERTIFICATE_VALIDATION_ERROR);
         }

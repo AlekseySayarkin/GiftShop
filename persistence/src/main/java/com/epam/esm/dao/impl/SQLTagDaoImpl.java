@@ -1,7 +1,6 @@
 package com.epam.esm.dao.impl;
 
 import com.epam.esm.dao.TagDao;
-import com.epam.esm.dao.exception.ErrorCode;
 import com.epam.esm.dao.exception.ErrorCodeEnum;
 import com.epam.esm.dao.exception.PersistenceException;
 import com.epam.esm.model.Tag;
@@ -56,8 +55,7 @@ public class SQLTagDaoImpl implements TagDao {
         }, holder);
 
         if (holder.getKey() == null) {
-            throw new PersistenceException("Failed to add Tag",
-                    new ErrorCode(ErrorCodeEnum.FAILED_TO_ADD_TAG.getCode()));
+            throw new PersistenceException("Failed to add Tag", ErrorCodeEnum.FAILED_TO_ADD_TAG);
         }
 
         return holder.getKey().intValue();

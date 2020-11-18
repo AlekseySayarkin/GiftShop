@@ -30,8 +30,7 @@ public class TagController {
 
     @PostMapping("/tags")
     public Tag addTag(@RequestBody Tag tag) throws ServiceException {
-        tag.setId(tagService.addTag(tag));
-        return tag;
+        return tagService.addTag(tag);
     }
 
     @DeleteMapping("/tags/{id}")

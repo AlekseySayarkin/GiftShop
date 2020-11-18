@@ -66,8 +66,8 @@ public class GiftCertificateServiceImplTest {
             expected.add(certificate);
         }
 
-        Mockito.when(giftCertificateService.getAllGiftCertificates()).thenReturn(expected);
-        actual = giftCertificateService.getAllGiftCertificates();
+        Mockito.when(giftCertificateService.getGiftCertificatesByContent()).thenReturn(expected);
+        actual = giftCertificateService.getGiftCertificatesByContent();
 
         Assert.assertEquals(expected, actual);
         Mockito.verify(giftCertificateDAO).getAllGiftCertificates();
@@ -90,7 +90,7 @@ public class GiftCertificateServiceImplTest {
         Mockito.when(giftCertificateDAO.createCertificateTagRelation(
                 giftCertificate.getId(), tag.getId())).thenReturn(true);
         Mockito.when(giftCertificateDAO.addGiftCertificate(giftCertificate)).thenReturn(expectedId);
-        giftCertificate.setId(giftCertificateService.addGiftCertificate(giftCertificate));
+        giftCertificate = giftCertificateService.addGiftCertificate(giftCertificate);
 
         Assert.assertEquals(expectedId, giftCertificate.getId());
         Mockito.verify(tagDao).addTag(tag);
@@ -103,7 +103,7 @@ public class GiftCertificateServiceImplTest {
         GiftCertificate giftCertificate = new GiftCertificate();
 
         try {
-            giftCertificate.setId(giftCertificateService.addGiftCertificate(giftCertificate));
+            giftCertificateService.addGiftCertificate(giftCertificate);
         } catch (ServiceException e) {
             Assert.assertEquals("Invalid certificate", e.getMessage());
         }

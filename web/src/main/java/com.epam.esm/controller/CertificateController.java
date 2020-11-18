@@ -23,11 +23,7 @@ public class CertificateController {
     @GetMapping("/certificates")
     public List<GiftCertificate> getGiftCertificates(
             @RequestBody(required = false) CertificateRequestBody request) throws ServiceException {
-        if (request != null) {
            return giftCertificateService.getGiftCertificates(request);
-        } else {
-            return giftCertificateService.getAllGiftCertificates();
-        }
     }
 
     @GetMapping("/certificates/{id}")
@@ -37,8 +33,7 @@ public class CertificateController {
 
     @PostMapping("/certificates")
     public GiftCertificate addGiftCertificate(@RequestBody GiftCertificate giftCertificate) throws ServiceException {
-        giftCertificate.setId(giftCertificateService.addGiftCertificate(giftCertificate));
-        return giftCertificate;
+        return giftCertificateService.addGiftCertificate(giftCertificate);
     }
 
     @DeleteMapping("/certificates")

@@ -2,7 +2,6 @@ package com.epam.esm.service.impl;
 
 import com.epam.esm.dao.GiftCertificateDAO;
 import com.epam.esm.dao.TagDao;
-import com.epam.esm.dao.exception.ErrorCode;
 import com.epam.esm.dao.exception.PersistenceException;
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.model.Tag;
@@ -22,11 +21,11 @@ import java.util.List;
 
 public class GiftCertificateServiceImpl implements GiftCertificateService {
 
-    private enum SortParameter {
+    public enum SortParameter {
         DATE, NAME
     }
 
-    private enum SortType {
+    public enum SortType {
         ASC, DESC
     }
 
@@ -44,71 +43,66 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     public GiftCertificate getGiftCertificate(String name) throws ServiceException {
         if (name == null || name.isEmpty()) {
-            throw new ServiceException("Invalid name", new ErrorCode(ErrorCodeEnum.INVALID_INPUT.getCode()));
+            throw new ServiceException("Invalid name", ErrorCodeEnum.INVALID_INPUT);
         }
 
         try {
             return giftCertificateDAO.getGiftCertificate(name);
         } catch (DataAccessException e) {
             LOGGER.error("Following exception was thrown in getGiftCertificate(String name): " + e.getMessage());
-            throw new ServiceException("Failed to get certificate",
-                    new ErrorCode(ErrorCodeEnum.FAILED_TO_RETRIEVE_CERTIFICATE.getCode()));
+            throw new ServiceException("Failed to get certificate", ErrorCodeEnum.FAILED_TO_RETRIEVE_CERTIFICATE);
         }
     }
 
     @Override
     public GiftCertificate getGiftCertificate(int id) throws ServiceException {
         if (id <= 0) {
-            throw new ServiceException("Invalid id",  new ErrorCode(ErrorCodeEnum.INVALID_INPUT.getCode()));
+            throw new ServiceException("Invalid id", ErrorCodeEnum.INVALID_INPUT);
         }
 
         try {
             return giftCertificateDAO.getGiftCertificate(id);
         } catch (DataAccessException e) {
             LOGGER.error("Following exception was thrown in getGiftCertificate(int id): " + e.getMessage());
-            throw new ServiceException("Failed to get certificate",
-                    new ErrorCode(ErrorCodeEnum.FAILED_TO_RETRIEVE_CERTIFICATE.getCode()));
+            throw new ServiceException("Failed to get certificate", ErrorCodeEnum.FAILED_TO_RETRIEVE_CERTIFICATE);
         }
     }
 
     @Override
-    public List<GiftCertificate> getAllGiftCertificates() throws ServiceException {
+    public List<GiftCertificate> getGiftCertificatesByContent() throws ServiceException {
         try {
             return giftCertificateDAO.getAllGiftCertificates();
         } catch (DataAccessException e) {
             LOGGER.error("Following exception was thrown in getAllGiftCertificates(): " + e.getMessage());
-            throw new ServiceException("Failed to get certificate",
-                    new ErrorCode(ErrorCodeEnum.FAILED_TO_RETRIEVE_CERTIFICATE.getCode()));
+            throw new ServiceException("Failed to get certificate", ErrorCodeEnum.FAILED_TO_RETRIEVE_CERTIFICATE);
         }
     }
 
     @Override
-    public List<GiftCertificate> getAllGiftCertificates(String content) throws ServiceException {
+    public List<GiftCertificate> getGiftCertificatesByContent(String content) throws ServiceException {
         if (content == null || content.isEmpty()) {
-            throw new ServiceException("Invalid content",  new ErrorCode(ErrorCodeEnum.INVALID_INPUT.getCode()));
+            throw new ServiceException("Invalid content", ErrorCodeEnum.INVALID_INPUT);
         }
 
         try {
             return giftCertificateDAO.getAllGiftCertificates(content);
         } catch (DataAccessException e) {
             LOGGER.error("Following exception was thrown in getAllGiftCertificates(String content): " + e.getMessage());
-            throw new ServiceException("Failed to get certificate",
-                    new ErrorCode(ErrorCodeEnum.FAILED_TO_RETRIEVE_CERTIFICATE.getCode()));
+            throw new ServiceException("Failed to get certificate", ErrorCodeEnum.FAILED_TO_RETRIEVE_CERTIFICATE);
         }
     }
 
     @Override
     public List<GiftCertificate> getGiftCertificateByTagName(String tagName) throws ServiceException {
         if (tagName == null || tagName.isEmpty()) {
-            throw new ServiceException("Invalid tag name",  new ErrorCode(ErrorCodeEnum.INVALID_INPUT.getCode()));
+            throw new ServiceException("Invalid tag name", ErrorCodeEnum.INVALID_INPUT);
         }
 
         try {
             return giftCertificateDAO.getGiftCertificateByTagName(tagName);
         } catch (DataAccessException e) {
             LOGGER.error("Following exception was thrown in getGiftCertificateByTagName(): " + e.getMessage());
-            throw new ServiceException("Failed to get certificate",
-                    new ErrorCode(ErrorCodeEnum.FAILED_TO_RETRIEVE_CERTIFICATE.getCode()));
+            throw new ServiceException("Failed to get certificate", ErrorCodeEnum.FAILED_TO_RETRIEVE_CERTIFICATE);
         }
     }
 
@@ -119,8 +113,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             return giftCertificateDAO.getAllGiftCertificatesSortedByName(isAscending);
         } catch (DataAccessException e) {
             LOGGER.error("Following exception was thrown in getAllGiftCertificatesSortedByName(): " + e.getMessage());
-            throw new ServiceException("Failed to get certificate",
-                    new ErrorCode(ErrorCodeEnum.FAILED_TO_RETRIEVE_CERTIFICATE.getCode()));
+            throw new ServiceException("Failed to get certificate", ErrorCodeEnum.FAILED_TO_RETRIEVE_CERTIFICATE);
         }
     }
 
@@ -131,14 +124,17 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             return giftCertificateDAO.getAllGiftCertificatesSortedByDate(isAscending);
         } catch (DataAccessException e) {
             LOGGER.error("Following exception was thrown in getAllGiftCertificatesSortedByDate(): " + e.getMessage());
-            throw new ServiceException("Failed to get certificate",
-                    new ErrorCode(ErrorCodeEnum.FAILED_TO_RETRIEVE_CERTIFICATE.getCode()));
+            throw new ServiceException("Failed to get certificate", ErrorCodeEnum.FAILED_TO_RETRIEVE_CERTIFICATE);
         }
     }
     @Override
     public List<GiftCertificate> getGiftCertificates(CertificateRequestBody requestBody) throws ServiceException {
+        if (requestBody == null) {
+            return getGiftCertificatesByContent();
+        }
+
         if (requestBody.getContent() != null) {
-            return getAllGiftCertificates(requestBody.getContent());
+            return getGiftCertificatesByContent(requestBody.getContent());
         }
         if (requestBody.getSort() != null) {
             return getSortedCertificates(requestBody.getSort());
@@ -146,7 +142,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         if (requestBody.getTagName() != null) {
             return getGiftCertificateByTagName(requestBody.getTagName());
         }
-        throw new ServiceException("Wrong request input", new ErrorCode(ErrorCodeEnum.INVALID_SORT_INPUT.getCode()));
+        throw new ServiceException("Wrong request input", ErrorCodeEnum.INVALID_SORT_INPUT);
     }
 
     private List<GiftCertificate> getSortedCertificates(String sort) throws ServiceException {
@@ -156,8 +152,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             String sortType = sort.substring(++separator).toUpperCase();
 
             if (!EnumUtils.isValidEnum(SortParameter.class, sortBy)) {
-                throw new ServiceException("Wrong sort input",
-                        new ErrorCode(ErrorCodeEnum.INVALID_SORT_INPUT.getCode()));
+                throw new ServiceException("Wrong sort input", ErrorCodeEnum.INVALID_SORT_INPUT);
             }
 
             return switch (SortParameter.valueOf(sortBy)) {
@@ -165,14 +160,13 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
                 case NAME -> getAllGiftCertificatesSortedByName(isAscending(sortType));
             };
         } else {
-            throw new ServiceException("Wrong sort input", new ErrorCode(ErrorCodeEnum.INVALID_SORT_INPUT.getCode()));
+            throw new ServiceException("Wrong sort input", ErrorCodeEnum.INVALID_SORT_INPUT);
         }
     }
 
     private boolean isAscending(String sort) throws ServiceException {
         if (!EnumUtils.isValidEnum(SortType.class, sort)) {
-            throw new ServiceException("Wrong sort input",
-                    new ErrorCode(ErrorCodeEnum.INVALID_SORT_INPUT.getCode()));
+            throw new ServiceException("Wrong sort input", ErrorCodeEnum.INVALID_SORT_INPUT);
         }
 
         return switch (SortType.valueOf(sort)) {
@@ -183,22 +177,21 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     @Transactional
-    public int addGiftCertificate(GiftCertificate giftCertificate) throws ServiceException {
+    public GiftCertificate addGiftCertificate(GiftCertificate giftCertificate) throws ServiceException {
         CertificateValidator.validateCertificate(giftCertificate);
         try {
-            giftCertificate.setId(giftCertificateDAO.addGiftCertificate(giftCertificate));
+            int id = giftCertificateDAO.addGiftCertificate(giftCertificate);
+            giftCertificate.setId(id);
 
             addNewTagsToCertificate(giftCertificate);
 
-            return giftCertificate.getId();
+            return giftCertificate;
         } catch (DataAccessException e) {
             LOGGER.error("Following exception was thrown in addGiftCertificate(): " + e.getMessage());
-            throw new ServiceException("Failed to get certificate",
-                    new ErrorCode(ErrorCodeEnum.FAILED_TO_ADD_CERTIFICATE.getCode()));
+            throw new ServiceException("Failed to get certificate", ErrorCodeEnum.FAILED_TO_ADD_CERTIFICATE);
         } catch (PersistenceException e) {
             LOGGER.error("Following exception was thrown: " + e.getMessage());
-            throw new ServiceException("Failed to return certificate id",
-                    new ErrorCode(ErrorCodeEnum.FAILED_TO_ADD_CERTIFICATE.getCode()));
+            throw new ServiceException("Failed to return certificate id", ErrorCodeEnum.FAILED_TO_ADD_CERTIFICATE);
         }
     }
 
@@ -213,13 +206,11 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
             if (!giftCertificateDAO.deleteGiftCertificate(giftCertificate.getId())) {
                 LOGGER.error("Failed to delete certificate");
-                throw new ServiceException("Failed to delete certificate",
-                        new ErrorCode(ErrorCodeEnum.FAILED_TO_DELETE_CERTIFICATE.getCode() + giftCertificate.getId()));
+                throw new ServiceException("Failed to delete certificate", ErrorCodeEnum.FAILED_TO_DELETE_CERTIFICATE);
             }
         } catch (DataAccessException e) {
             LOGGER.error("Following exception was thrown in deleteGiftCertificate(): " + e.getMessage());
-            throw new ServiceException("Failed to get certificate",
-                    new ErrorCode(ErrorCodeEnum.FAILED_TO_DELETE_CERTIFICATE.getCode() + giftCertificate.getId()));
+            throw new ServiceException("Failed to get certificate", ErrorCodeEnum.FAILED_TO_DELETE_CERTIFICATE);
         }
     }
 
@@ -232,17 +223,11 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
             if (!giftCertificateDAO.updateGiftCertificate(giftCertificate)) {
                 LOGGER.error("Failed to update certificate");
-                throw new ServiceException("Failed to update certificate",
-                        new ErrorCode(ErrorCodeEnum.FAILED_TO_DELETE_CERTIFICATE.getCode() + giftCertificate.getId()));
+                throw new ServiceException("Failed to update certificate", ErrorCodeEnum.FAILED_TO_UPDATE_CERTIFICATE);
             }
-        } catch (DataAccessException e) {
+        } catch (DataAccessException | PersistenceException e) {
             LOGGER.error("Following exception was thrown in updateGiftCertificate(): " + e.getMessage());
-            throw new ServiceException("Failed to get certificate",
-                    new ErrorCode(ErrorCodeEnum.FAILED_TO_UPDATE_CERTIFICATE.getCode() + giftCertificate.getId()));
-        } catch (PersistenceException e) {
-            LOGGER.error("Following exception was thrown in updateGiftCertificate(): " + e.getMessage());
-            throw new ServiceException("Failed to return certificate id",
-                    new ErrorCode(ErrorCodeEnum.FAILED_TO_UPDATE_CERTIFICATE.getCode() + giftCertificate.getId()));
+            throw new ServiceException("Failed to update certificate", ErrorCodeEnum.FAILED_TO_UPDATE_CERTIFICATE);
         }
     }
 

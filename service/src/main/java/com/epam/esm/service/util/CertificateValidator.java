@@ -1,6 +1,5 @@
 package com.epam.esm.service.util;
 
-import com.epam.esm.dao.exception.ErrorCode;
 import com.epam.esm.dao.exception.ErrorCodeEnum;
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.service.exception.ServiceException;
@@ -14,24 +13,19 @@ public class CertificateValidator {
 
     public static void validateCertificate(GiftCertificate giftCertificate) throws ServiceException {
         if (giftCertificate == null || giftCertificate.getId() < 0) {
-            throw new ServiceException(
-                    "Invalid certificate", new ErrorCode(ErrorCodeEnum.CERTIFICATE_VALIDATION_ERROR.getCode()));
+            throw new ServiceException("Invalid certificate", ErrorCodeEnum.CERTIFICATE_VALIDATION_ERROR);
         }
         if (!isValidName(giftCertificate.getName()) || !isValidDescription(giftCertificate.getDescription())) {
-            throw new ServiceException(
-                    "Invalid certificate", new ErrorCode(ErrorCodeEnum.CERTIFICATE_VALIDATION_ERROR.getCode()));
+            throw new ServiceException("Invalid certificate", ErrorCodeEnum.CERTIFICATE_VALIDATION_ERROR);
         }
         if (!isValidPrice(giftCertificate.getPrice())) {
-            throw new ServiceException(
-                    "Invalid certificate", new ErrorCode(ErrorCodeEnum.CERTIFICATE_VALIDATION_ERROR.getCode()));
+            throw new ServiceException("Invalid certificate", ErrorCodeEnum.CERTIFICATE_VALIDATION_ERROR);
         }
         if (!isValidCreateAndUpdateDates(giftCertificate.getCreateDate(), giftCertificate.getLastUpdateDate())) {
-            throw new ServiceException(
-                    "Invalid certificate", new ErrorCode(ErrorCodeEnum.CERTIFICATE_VALIDATION_ERROR.getCode()));
+            throw new ServiceException("Invalid certificate", ErrorCodeEnum.CERTIFICATE_VALIDATION_ERROR);
         }
         if(!isValidDuration(giftCertificate.getDuration())) {
-            throw new ServiceException(
-                    "Invalid certificate", new ErrorCode(ErrorCodeEnum.CERTIFICATE_VALIDATION_ERROR.getCode()));
+            throw new ServiceException("Invalid certificate", ErrorCodeEnum.CERTIFICATE_VALIDATION_ERROR);
         }
     }
 

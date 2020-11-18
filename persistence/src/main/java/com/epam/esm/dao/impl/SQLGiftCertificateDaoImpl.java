@@ -1,7 +1,6 @@
 package com.epam.esm.dao.impl;
 
 import com.epam.esm.dao.GiftCertificateDAO;
-import com.epam.esm.dao.exception.ErrorCode;
 import com.epam.esm.dao.exception.ErrorCodeEnum;
 import com.epam.esm.dao.exception.PersistenceException;
 import com.epam.esm.model.GiftCertificate;
@@ -158,8 +157,7 @@ public class SQLGiftCertificateDaoImpl implements GiftCertificateDAO {
         }, holder);
 
         if (holder.getKey() == null) {
-            throw new PersistenceException("Failed to add GiftCertificate",
-                    new ErrorCode(ErrorCodeEnum.FAILED_TO_ADD_CERTIFICATE.getCode()));
+            throw new PersistenceException("Failed to add GiftCertificate", ErrorCodeEnum.FAILED_TO_ADD_CERTIFICATE);
         }
 
         return holder.getKey().intValue();

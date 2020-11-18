@@ -51,7 +51,7 @@ public interface TagService {
      * @throws ServiceException when failed to add {@code Tag} to persistence layer.
      * @return id of a {@code Tag} from persistence layer.
      */
-    int addTag(Tag tag) throws ServiceException;
+    Tag addTag(Tag tag) throws ServiceException;
 
     /**
      * Deletes {@code Tag} from persistence layer.

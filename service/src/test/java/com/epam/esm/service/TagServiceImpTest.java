@@ -67,7 +67,7 @@ public class TagServiceImpTest {
         int expectedId = 1;
 
         Mockito.when(tagDao.addTag(tag)).thenReturn(expectedId);
-        tag.setId(tagService.addTag(tag));
+        tag = tagService.addTag(tag);
 
         Assert.assertEquals(expectedId, tag.getId());
         Mockito.verify(tagDao).addTag(tag);
@@ -78,7 +78,7 @@ public class TagServiceImpTest {
         Tag tag = new Tag();
 
         try {
-            tag.setId(tagService.addTag(tag));
+            tagService.addTag(tag);
         } catch (ServiceException e) {
             Assert.assertEquals("Invalid tag", e.getMessage());
         }

@@ -150,10 +150,12 @@ public class SQLGiftCertificateDaoImpl implements GiftCertificateDAO {
             ps.setDouble(3, giftCertificate.getPrice());
             ps.setTimestamp(4,
                     Timestamp.valueOf(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss")
-                            .format(giftCertificate.getCreateDate())));
+                            .format(ZonedDateTime.ofInstant(
+                                    giftCertificate.getLastUpdateDate().toInstant(), ZoneOffset.of("-03:00")))));
             ps.setTimestamp(5,
-                    Timestamp.valueOf(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss").
-                            format(giftCertificate.getLastUpdateDate())));
+                    Timestamp.valueOf(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss")
+                            .format(ZonedDateTime.ofInstant(
+                                    giftCertificate.getLastUpdateDate().toInstant(), ZoneOffset.of("-03:00")))));
             ps.setInt(6, giftCertificate.getDuration());
             return ps;
         }, holder);

@@ -85,8 +85,10 @@ public class SQLGiftCertificateDaoImplTest {
 
     private boolean equalDates(ZonedDateTime first, ZonedDateTime second) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
-        String firstDate = ZonedDateTime.ofInstant(first.toInstant(), ZoneOffset.of("-03:00")).format(formatter);
+        String firstDate = ZonedDateTime.ofInstant(first.toInstant(), ZoneOffset.of("-06:00")).format(formatter);
         String secondDate = ZonedDateTime.ofInstant(second.toInstant(), ZoneOffset.UTC).format(formatter);
+
+        System.out.println(firstDate + "||" + secondDate);
         return firstDate.equals(secondDate);
     }
 

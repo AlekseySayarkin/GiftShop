@@ -199,7 +199,13 @@ public class SQLGiftCertificateDaoImplTest {
 
         updated = giftCertificateDAO.getGiftCertificate(toUpdate.getId());
 
-        assertEquals(toUpdate, updated);
+        Assert.assertEquals(toUpdate.getId(), updated.getId());
+        Assert.assertEquals(toUpdate.getName(), updated.getName());
+        Assert.assertEquals(toUpdate.getPrice(), updated.getPrice(), 0.0001);
+        Assert.assertEquals(toUpdate.getDuration(), updated.getDuration());
+        Assert.assertEquals(toUpdate.getTags(), updated.getTags());
+
+        Assert.assertTrue(equalDates(toUpdate.getCreateDate(), updated.getCreateDate()));
     }
 
     @Test

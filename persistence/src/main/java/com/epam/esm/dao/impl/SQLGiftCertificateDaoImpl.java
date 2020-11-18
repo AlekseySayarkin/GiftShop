@@ -12,6 +12,8 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
 import java.sql.*;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -183,7 +185,9 @@ public class SQLGiftCertificateDaoImpl implements GiftCertificateDAO {
             params[2] = giftCertificate.getPrice();
         }
 
-        params[3] = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss").format(giftCertificate.getLastUpdateDate());
+        params[3] = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss")
+                .format(ZonedDateTime.ofInstant(
+                        giftCertificate.getLastUpdateDate().toInstant(), ZoneOffset.of("-03:00")));
 
         if (giftCertificate.getDuration() != 0) {
             params[4] = giftCertificate.getDuration();

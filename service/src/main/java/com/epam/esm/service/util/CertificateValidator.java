@@ -42,11 +42,7 @@ public class CertificateValidator {
     }
 
     private static boolean isValidCreateAndUpdateDates(ZonedDateTime createDate, ZonedDateTime updateDate) {
-        if (createDate == null) {
-            return false;
-        }
-
-        if (updateDate != null) {
+        if (createDate != null && updateDate != null) {
             return createDate.isBefore(updateDate) || createDate.equals(updateDate);
         }
 

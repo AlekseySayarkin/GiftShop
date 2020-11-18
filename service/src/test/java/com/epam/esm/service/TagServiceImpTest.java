@@ -67,7 +67,7 @@ public class TagServiceImpTest {
         int expectedId = 1;
 
         Mockito.when(tagDao.addTag(tag)).thenReturn(expectedId);
-        tag.setId(tagService.addTag(tag));
+        tag = tagService.addTag(tag);
 
         Assert.assertEquals(expectedId, tag.getId());
         Mockito.verify(tagDao).addTag(tag);
@@ -78,20 +78,21 @@ public class TagServiceImpTest {
         Tag tag = new Tag();
 
         try {
-            tag.setId(tagService.addTag(tag));
+            tagService.addTag(tag);
         } catch (ServiceException e) {
             Assert.assertEquals("Invalid tag", e.getMessage());
         }
     }
 
     @Test
-    public void whenDeleteTag_thenReturnTrue() throws ServiceException {
+    public void whenDeleteTag_thenThrowAnException() {
         Tag tag = new Tag(1, "spa");
 
-        Mockito.when(tagDao.deleteTag(tag.getId())).thenReturn(true);
-        boolean result = tagService.deleteTag(tag.getId());
-
-        Assert.assertTrue(result);
+        try {
+            tagService.deleteTag(tag.getId());
+        } catch (ServiceException e) {
+            Assert.assertEquals("Failed to delete tag", e.getMessage());
+        }
         Mockito.verify(tagDao).deleteTag(tag.getId());
     }
 }

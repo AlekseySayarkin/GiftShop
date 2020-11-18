@@ -30,7 +30,7 @@ import java.util.List;
 @Configuration
 @PropertySource("classpath:db.properties")
 @EnableTransactionManagement
-public class AppConfig {
+public class GiftShopConfig {
 
     @Value("${db.driver}")
     private String driver;

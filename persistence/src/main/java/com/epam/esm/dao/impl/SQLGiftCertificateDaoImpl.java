@@ -1,7 +1,7 @@
 package com.epam.esm.dao.impl;
 
 import com.epam.esm.dao.GiftCertificateDAO;
-import com.epam.esm.dao.exception.ErrorCode;
+import com.epam.esm.dao.exception.ErrorCodeEnum;
 import com.epam.esm.dao.exception.PersistenceException;
 import com.epam.esm.model.GiftCertificate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +12,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
 import java.sql.*;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class SQLGiftCertificateDaoImpl implements GiftCertificateDAO {
@@ -79,8 +80,6 @@ public class SQLGiftCertificateDaoImpl implements GiftCertificateDAO {
     private static final String SQL_DELETE_JOIN =
             "delete from CertificateDetails where (CertificateID = ? and TagID = ?)";
 
-    private static final int FAILED_TO_ADD_CERTIFICATE_ERROR_CODE = 50120;
-
     private final JdbcTemplate jdbcTemplate;
     private final ResultSetExtractor<List<GiftCertificate>> extractor;
     private final RowMapper<GiftCertificate> mapper;
@@ -123,7 +122,7 @@ public class SQLGiftCertificateDaoImpl implements GiftCertificateDAO {
 
     @Override
     public List<GiftCertificate> getAllGiftCertificatesSortedByName(boolean isAscending) {
-        return getAllGiftCertificatesSortedByParameter("Name", isAscending);
+        return getAllGiftCertificatesSortedByParameter("GiftCertificates.Name", isAscending);
     }
 
     @Override
@@ -147,15 +146,18 @@ public class SQLGiftCertificateDaoImpl implements GiftCertificateDAO {
             ps.setString(1, giftCertificate.getName());
             ps.setString(2, giftCertificate.getDescription());
             ps.setDouble(3, giftCertificate.getPrice());
-            ps.setTimestamp(4, Timestamp.from(giftCertificate.getCreateDate().toInstant()));
-            ps.setTimestamp(5, Timestamp.from(giftCertificate.getLastUpdateDate().toInstant()));
+            ps.setTimestamp(4,
+                    Timestamp.valueOf(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss")
+                            .format(giftCertificate.getCreateDate())));
+            ps.setTimestamp(5,
+                    Timestamp.valueOf(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss").
+                            format(giftCertificate.getLastUpdateDate())));
             ps.setInt(6, giftCertificate.getDuration());
             return ps;
         }, holder);
 
         if (holder.getKey() == null) {
-            throw new PersistenceException("Failed to add GiftCertificate",
-                    new ErrorCode(FAILED_TO_ADD_CERTIFICATE_ERROR_CODE));
+            throw new PersistenceException("Failed to add GiftCertificate", ErrorCodeEnum.FAILED_TO_ADD_CERTIFICATE);
         }
 
         return holder.getKey().intValue();
@@ -181,7 +183,7 @@ public class SQLGiftCertificateDaoImpl implements GiftCertificateDAO {
             params[2] = giftCertificate.getPrice();
         }
 
-        params[3] = giftCertificate.getLastUpdateDate();
+        params[3] = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss").format(giftCertificate.getLastUpdateDate());
 
         if (giftCertificate.getDuration() != 0) {
             params[4] = giftCertificate.getDuration();

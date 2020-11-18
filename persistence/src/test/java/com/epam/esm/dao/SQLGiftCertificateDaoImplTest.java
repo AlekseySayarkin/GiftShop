@@ -19,6 +19,7 @@ import javax.sql.DataSource;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class SQLGiftCertificateDaoImplTest {
@@ -52,6 +53,7 @@ public class SQLGiftCertificateDaoImplTest {
         certificate.setName("Tour to Greece");
         certificate.setDescription("Certificate description");
         certificate.setPrice(99.99);
+
         certificate.setCreateDate(ZonedDateTime.ofInstant(Instant.now(), ZoneOffset.UTC));
         certificate.setLastUpdateDate(ZonedDateTime.ofInstant(Instant.now(), ZoneOffset.UTC));
         certificate.setDuration(10);
@@ -62,6 +64,30 @@ public class SQLGiftCertificateDaoImplTest {
         certificate.setTags(tags);
 
         return certificate;
+    }
+
+    private void assertEquals(List<GiftCertificate> expected, List<GiftCertificate> actual) {
+        for (int i = 0; i < expected.size(); i++) {
+            assertEquals(expected.get(i), actual.get(i));
+        }
+    }
+
+    private void assertEquals(GiftCertificate actual, GiftCertificate expected) {
+        Assert.assertEquals(actual.getId(), expected.getId());
+        Assert.assertEquals(actual.getName(), expected.getName());
+        Assert.assertEquals(actual.getPrice(), expected.getPrice(), 0.0001);
+        Assert.assertEquals(actual.getDuration(), expected.getDuration());
+        Assert.assertEquals(actual.getTags(), expected.getTags());
+
+        Assert.assertTrue(equalDates(actual.getCreateDate(), expected.getCreateDate()));
+        Assert.assertTrue(equalDates(actual.getLastUpdateDate(), expected.getLastUpdateDate()));
+    }
+
+    private boolean equalDates(ZonedDateTime first, ZonedDateTime second) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
+        String firstDate = ZonedDateTime.ofInstant(first.toInstant(), ZoneOffset.of("-03:00")).format(formatter);
+        String secondDate = ZonedDateTime.ofInstant(second.toInstant(), ZoneOffset.UTC).format(formatter);
+        return firstDate.equals(secondDate);
     }
 
     @Test
@@ -76,10 +102,10 @@ public class SQLGiftCertificateDaoImplTest {
         giftCertificateDAO.createCertificateTagRelation(expected.getId(), tagDao.getTag("relax").getId());
 
         actual = giftCertificateDAO.getGiftCertificate(expected.getName());
-        Assert.assertEquals(expected, actual);
+        assertEquals(expected, actual);
 
         actual = giftCertificateDAO.getGiftCertificate(expected.getId());
-        Assert.assertEquals(expected, actual);
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -101,7 +127,7 @@ public class SQLGiftCertificateDaoImplTest {
         }
 
         actual = giftCertificateDAO.getGiftCertificateByTagName("relax");
-        Assert.assertEquals(expected, actual);
+        assertEquals(expected, actual);
 
         actual = giftCertificateDAO.getGiftCertificateByTagName("spa");
         Assert.assertNotEquals(expected, actual);
@@ -148,7 +174,7 @@ public class SQLGiftCertificateDaoImplTest {
         }
 
         actual = giftCertificateDAO.getAllGiftCertificates();
-        Assert.assertEquals(expected, actual);
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -169,16 +195,11 @@ public class SQLGiftCertificateDaoImplTest {
             giftCertificateDAO.createCertificateTagRelation(toUpdate.getId(), tag.getId());
         }
 
-        boolean result = giftCertificateDAO.updateGiftCertificate(toUpdate);
-        Assert.assertTrue(result);
+        giftCertificateDAO.updateGiftCertificate(toUpdate);
 
         updated = giftCertificateDAO.getGiftCertificate(toUpdate.getId());
 
-        Assert.assertEquals(toUpdate.getId(), updated.getId());
-        Assert.assertEquals(toUpdate.getName(), updated.getName());
-        Assert.assertEquals(toUpdate.getPrice(), updated.getPrice(), 0.0001);
-        Assert.assertEquals(toUpdate.getDuration(), updated.getDuration());
-        Assert.assertEquals(toUpdate.getTags(), updated.getTags());
+        assertEquals(toUpdate, updated);
     }
 
     @Test
@@ -201,14 +222,14 @@ public class SQLGiftCertificateDaoImplTest {
         }
 
         actualCertificateList = giftCertificateDAO.getAllGiftCertificatesSortedByDate(true);
-        Assert.assertEquals(expectedCertificateList, actualCertificateList);
+        assertEquals(expectedCertificateList, actualCertificateList);
 
         actualCertificateList = giftCertificateDAO.getAllGiftCertificatesSortedByDate(false);
         Assert.assertNotEquals(expectedCertificateList, actualCertificateList);
 
-        Collections.reverse(expectedCertificateList);
+        Collections.reverse(actualCertificateList);
         actualCertificateList = giftCertificateDAO.getAllGiftCertificatesSortedByDate(false);
-        Assert.assertEquals(expectedCertificateList, actualCertificateList);
+        assertEquals(expectedCertificateList, actualCertificateList);
     }
 
     @Test
@@ -231,7 +252,7 @@ public class SQLGiftCertificateDaoImplTest {
         }
 
         actualCertificateList = giftCertificateDAO.getAllGiftCertificatesSortedByName(true);
-        Assert.assertEquals(expectedGiftCertificates,actualCertificateList);
+        assertEquals(expectedGiftCertificates, actualCertificateList);
 
         actualCertificateList =  giftCertificateDAO.getAllGiftCertificatesSortedByName(false);
         Assert.assertNotEquals(
@@ -239,7 +260,7 @@ public class SQLGiftCertificateDaoImplTest {
 
         Collections.reverse(expectedGiftCertificates);
         actualCertificateList = giftCertificateDAO.getAllGiftCertificatesSortedByName(false);
-        Assert.assertEquals(expectedGiftCertificates, actualCertificateList);
+        assertEquals(expectedGiftCertificates, actualCertificateList);
     }
 
     @Test
@@ -257,7 +278,7 @@ public class SQLGiftCertificateDaoImplTest {
             }
 
             expected = giftCertificateDAO.getAllGiftCertificates("Certificate" + (char) i).get(0);
-            Assert.assertEquals(certificate, expected);
+            assertEquals(certificate, expected);
 
             int size = giftCertificateDAO.getAllGiftCertificates("New content" + (char) i).size();
             Assert.assertEquals(0, size);
@@ -274,7 +295,7 @@ public class SQLGiftCertificateDaoImplTest {
             }
 
             expected = giftCertificateDAO.getAllGiftCertificates("Description" + (char) i).get(0);
-            Assert.assertEquals(certificate, expected);
+            assertEquals(certificate, expected);
 
             int size = giftCertificateDAO.getAllGiftCertificates("New content" + (char) i).size();
             Assert.assertEquals(0, size);

@@ -66,8 +66,8 @@ public class GiftCertificateServiceImplTest {
             expected.add(certificate);
         }
 
-        Mockito.when(giftCertificateService.getAllGiftCertificates()).thenReturn(expected);
-        actual = giftCertificateService.getAllGiftCertificates();
+        Mockito.when(giftCertificateService.getGiftCertificatesByContent()).thenReturn(expected);
+        actual = giftCertificateService.getGiftCertificatesByContent();
 
         Assert.assertEquals(expected, actual);
         Mockito.verify(giftCertificateDAO).getAllGiftCertificates();
@@ -90,7 +90,7 @@ public class GiftCertificateServiceImplTest {
         Mockito.when(giftCertificateDAO.createCertificateTagRelation(
                 giftCertificate.getId(), tag.getId())).thenReturn(true);
         Mockito.when(giftCertificateDAO.addGiftCertificate(giftCertificate)).thenReturn(expectedId);
-        giftCertificate.setId(giftCertificateService.addGiftCertificate(giftCertificate));
+        giftCertificate = giftCertificateService.addGiftCertificate(giftCertificate);
 
         Assert.assertEquals(expectedId, giftCertificate.getId());
         Mockito.verify(tagDao).addTag(tag);
@@ -103,14 +103,14 @@ public class GiftCertificateServiceImplTest {
         GiftCertificate giftCertificate = new GiftCertificate();
 
         try {
-            giftCertificate.setId(giftCertificateService.addGiftCertificate(giftCertificate));
+            giftCertificateService.addGiftCertificate(giftCertificate);
         } catch (ServiceException e) {
             Assert.assertEquals("Invalid certificate", e.getMessage());
         }
     }
 
     @Test
-    public void whenDeleteTag_thenReturnTrue() throws ServiceException {
+    public void whenDeleteCertificate_thenThrowException() {
         GiftCertificate giftCertificate = new GiftCertificate();
         giftCertificate.setId(1);
         giftCertificate.setName("Tourism");
@@ -122,13 +122,42 @@ public class GiftCertificateServiceImplTest {
         Tag tag = new Tag("spa");
         giftCertificate.getTags().add(tag);
 
-        Mockito.when(giftCertificateDAO.deleteCertificateTagRelation(
-                giftCertificate.getId(), tag.getId())).thenReturn(true);
-        Mockito.when(giftCertificateDAO.deleteGiftCertificate(giftCertificate.getId())).thenReturn(true);
-        boolean result = giftCertificateService.deleteGiftCertificate(giftCertificate);
+        try {
+            giftCertificateService.deleteGiftCertificate(giftCertificate);
+        } catch (ServiceException e) {
+            Assert.assertEquals("Failed to delete certificate", e.getMessage());
+        }
 
-        Assert.assertTrue(result);
         Mockito.verify(giftCertificateDAO).deleteCertificateTagRelation(giftCertificate.getId(), tag.getId());
         Mockito.verify(giftCertificateDAO).deleteGiftCertificate(giftCertificate.getId());
+    }
+
+    @Test
+    public void whenGetCertificatesFromRequestBody_returnCorrectlyCertificates() throws ServiceException {
+        CertificateRequestBody requestBody = new CertificateRequestBody();
+        List<GiftCertificate> expected;
+        List<GiftCertificate> actual;
+
+        expected = new ArrayList<>();
+        for (int i = 1; i < 10; i++) {
+            GiftCertificate certificate = new GiftCertificate();
+            certificate.setId(i);
+            certificate.setName("Tag " + i);
+            expected.add(certificate);
+        }
+
+        requestBody.setSort("date.asc");
+        Mockito.when(giftCertificateDAO.getAllGiftCertificatesSortedByDate(true)).thenReturn(expected);
+
+        actual = giftCertificateService.getGiftCertificates(requestBody);
+        Assert.assertEquals(expected, actual);
+        Mockito.verify(giftCertificateDAO).getAllGiftCertificatesSortedByDate(true);
+
+        requestBody.setSort(null);
+        requestBody.setContent("Tag");
+        Mockito.when(giftCertificateDAO.getAllGiftCertificates(requestBody.getContent())).thenReturn(expected);
+        actual = giftCertificateService.getGiftCertificates(requestBody);
+        Assert.assertEquals(expected, actual);
+        Mockito.verify(giftCertificateDAO).getAllGiftCertificates(requestBody.getContent());
     }
 }

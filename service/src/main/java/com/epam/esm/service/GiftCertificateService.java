@@ -41,7 +41,7 @@ public interface GiftCertificateService {
      * @throws ServiceException when failed to get {@code GiftCertificate} from persistence layer.
      * @return List<GiftCertificate> - all existing certificates in persistence layer.
      */
-    List<GiftCertificate> getAllGiftCertificates() throws ServiceException;
+    List<GiftCertificate> getGiftCertificatesByContent() throws ServiceException;
 
     /**
      * Retrieves {@code GiftCertificate} from persistence layer
@@ -52,7 +52,7 @@ public interface GiftCertificateService {
      * @throws ServiceException when failed to get {@code GiftCertificate} from persistence layer.
      * @return List<GiftCertificate> - existing certificates in persistence layer.
      */
-    List<GiftCertificate> getAllGiftCertificates(String content) throws ServiceException;
+    List<GiftCertificate> getGiftCertificatesByContent(String content) throws ServiceException;
 
     /**
      * Retrieves {@code GiftCertificate} from persistence layer
@@ -85,22 +85,31 @@ public interface GiftCertificateService {
     List<GiftCertificate> getAllGiftCertificatesSortedByDate(boolean isAscending) throws ServiceException;
 
     /**
+     * Retrieves {@code GiftCertificate} from persistence layer
+     * using one of non null fields of {@code CertificateRequestBody}.
+     *
+     * @param requestBody representation of http request body.
+     * @throws ServiceException when failed to get {@code GiftCertificate} from persistence layer.
+     * @return List<GiftCertificate> - certificates from persistence layer.
+     */
+    List<GiftCertificate> getGiftCertificates(CertificateRequestBody requestBody) throws ServiceException;
+
+    /**
      * Adds new {@code GiftCertificate} to persistence layer.
      *
      * @param giftCertificate {@code GiftCertificate} which to be added to persistence layer.
      * @throws ServiceException when failed to add {@code GiftCertificate} to persistence layer.
-     * @return id of a {@code GiftCertificate} from persistence layer.
+     * @return {@code GiftCertificate} from persistence layer.
      */
-    int addGiftCertificate(GiftCertificate giftCertificate) throws ServiceException;
+    GiftCertificate addGiftCertificate(GiftCertificate giftCertificate) throws ServiceException;
 
     /**
      * Deletes {@code GiftCertificate} from persistence layer.
      *
      * @param giftCertificate {@code GiftCertificate} which to deleted from persistence layer.
      * @throws ServiceException when failed to delete {@code GiftCertificate} from persistence layer.
-     * @return whether transaction was successful.
      */
-    boolean deleteGiftCertificate(GiftCertificate giftCertificate) throws ServiceException;
+    void deleteGiftCertificate(GiftCertificate giftCertificate) throws ServiceException;
 
     /**
      * Updates {@code GiftCertificate} in persistence layer.
@@ -108,7 +117,6 @@ public interface GiftCertificateService {
      *
      * @param giftCertificate {@code GiftCertificate} which to update in persistence layer.
      * @throws ServiceException when failed to update {@code GiftCertificate} in persistence layer.
-     * @return whether transaction was successful.
      */
-    boolean updateGiftCertificate(GiftCertificate giftCertificate) throws ServiceException;
+    void updateGiftCertificate(GiftCertificate giftCertificate) throws ServiceException;
 }

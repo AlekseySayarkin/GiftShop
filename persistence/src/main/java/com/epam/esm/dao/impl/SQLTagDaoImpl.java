@@ -1,7 +1,7 @@
 package com.epam.esm.dao.impl;
 
 import com.epam.esm.dao.TagDao;
-import com.epam.esm.dao.exception.ErrorCode;
+import com.epam.esm.dao.exception.ErrorCodeEnum;
 import com.epam.esm.dao.exception.PersistenceException;
 import com.epam.esm.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +20,6 @@ public class SQLTagDaoImpl implements TagDao {
     private static final String SQL_GET_TAG_BY_ID = "select Id, Name from Tags where Id = ?";
     private static final String SQL_ADD_TAG = "insert into Tags (Name) values (?)";
     private static final String SQL_DELETE_TAG = "delete from Tags where ID = ?";
-
-    private static final int FAILED_TO_ADD_TAG_ERROR_CODE = 50110;
 
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<Tag> tagRowMapper;
@@ -57,7 +55,7 @@ public class SQLTagDaoImpl implements TagDao {
         }, holder);
 
         if (holder.getKey() == null) {
-            throw new PersistenceException("Failed to add Tag", new ErrorCode(FAILED_TO_ADD_TAG_ERROR_CODE));
+            throw new PersistenceException("Failed to add Tag", ErrorCodeEnum.FAILED_TO_ADD_TAG);
         }
 
         return holder.getKey().intValue();

@@ -1,17 +1,25 @@
 package com.epam.esm.service.util;
 
+import com.epam.esm.dao.exception.ErrorCodeEnum;
 import com.epam.esm.model.Tag;
+import com.epam.esm.service.exception.ServiceException;
 
 public class TagValidator {
 
     private TagValidator() {
     }
 
-    public static boolean isValid(Tag tag) {
+    public static void validateTag(Tag tag) throws ServiceException {
         if (tag == null || tag.getId() < 0) {
-            return false;
+            throw new ServiceException("Invalid tag", ErrorCodeEnum.TAG_VALIDATION_ERROR);
         }
 
-        return tag.getName() != null && !tag.getName().isEmpty();
+        if (!isValidName(tag.getName())) {
+            throw new ServiceException("Invalid tag", ErrorCodeEnum.TAG_VALIDATION_ERROR);
+        }
+    }
+
+    private static boolean isValidName(String name) {
+        return name != null && !name.isEmpty();
     }
 }

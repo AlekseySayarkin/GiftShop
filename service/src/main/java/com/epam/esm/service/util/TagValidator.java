@@ -10,16 +10,24 @@ public class TagValidator {
     }
 
     public static void validateTag(Tag tag) throws ServiceException {
-        if (tag == null || tag.getId() < 0) {
-            throw new ServiceException("Invalid tag", ErrorCodeEnum.TAG_VALIDATION_ERROR);
+        if (tag == null) {
+            throw new ServiceException("Failed to validate: tag is empty", ErrorCodeEnum.TAG_VALIDATION_ERROR);
         }
+        validateId(tag.getId());
+        validateName(tag.getName());
+    }
 
-        if (!isValidName(tag.getName())) {
-            throw new ServiceException("Invalid tag", ErrorCodeEnum.TAG_VALIDATION_ERROR);
+    public static void validateId(int id) throws ServiceException {
+        if (id < 0) {
+            throw new ServiceException("Failed to validate: tag id is negative",
+                    ErrorCodeEnum.TAG_VALIDATION_ERROR);
         }
     }
 
-    private static boolean isValidName(String name) {
-        return name != null && !name.isEmpty();
+    public static void validateName(String name) throws ServiceException {
+        if (name == null || name.isEmpty()) {
+            throw new ServiceException("Failed to validate: tag name is empty",
+                    ErrorCodeEnum.TAG_VALIDATION_ERROR);
+        }
     }
 }

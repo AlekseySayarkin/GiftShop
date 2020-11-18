@@ -27,29 +27,25 @@ public class TagServiceImp implements TagService {
 
     @Override
     public Tag getTag(String name) throws ServiceException {
-        if (name == null || name.isEmpty()) {
-            throw new ServiceException("Invalid name", ErrorCodeEnum.INVALID_INPUT);
-        }
-
+        TagValidator.validateName(name);
         try {
             return tagDao.getTag(name);
         } catch (DataAccessException e) {
             LOGGER.error("Following exception was thrown in getTag(String name): " + e.getMessage());
-            throw new ServiceException("Failed to get tag", ErrorCodeEnum.FAILED_TO_RETRIEVE_TAG);
+            throw new ServiceException("Failed to get tag by its name: " + name,
+                    ErrorCodeEnum.FAILED_TO_RETRIEVE_TAG);
         }
     }
 
     @Override
     public Tag getTag(int id) throws ServiceException {
-        if (id <= 0) {
-            throw new ServiceException("Invalid id", ErrorCodeEnum.INVALID_INPUT);
-        }
-
+        TagValidator.validateId(id);
         try {
             return tagDao.getTag(id);
         } catch (DataAccessException e) {
             LOGGER.error("Following exception was thrown in getTag(int id): " + e.getMessage());
-            throw new ServiceException("Failed to get tag", ErrorCodeEnum.FAILED_TO_RETRIEVE_TAG);
+            throw new ServiceException("Failed to get tag by it id: " + id,
+                    ErrorCodeEnum.FAILED_TO_RETRIEVE_TAG);
         }
     }
 
@@ -59,7 +55,7 @@ public class TagServiceImp implements TagService {
             return tagDao.getAllTags();
         } catch (DataAccessException e) {
             LOGGER.error("Following exception was thrown in getAllTags(): " + e.getMessage());
-            throw new ServiceException("Failed to get tags", ErrorCodeEnum.FAILED_TO_RETRIEVE_TAG);
+            throw new ServiceException("Failed to get all tags", ErrorCodeEnum.FAILED_TO_RETRIEVE_TAG);
         }
     }
 
@@ -72,27 +68,26 @@ public class TagServiceImp implements TagService {
             return tag;
         } catch (DataAccessException e) {
             LOGGER.error("Following exception was thrown in addTag(): " + e.getMessage());
-            throw new ServiceException("Failed to add tag", ErrorCodeEnum.FAILED_TO_ADD_TAG);
+            throw new ServiceException("Failed to add tag: it already exist", ErrorCodeEnum.FAILED_TO_ADD_TAG);
         } catch (PersistenceException e) {
             LOGGER.error("Following exception was thrown in addTag(): " + e.getMessage());
-            throw new ServiceException("Unable to ged tag id", ErrorCodeEnum.FAILED_TO_ADD_TAG);
+            throw new ServiceException(e.getMessage(), ErrorCodeEnum.FAILED_TO_ADD_TAG);
         }
     }
 
     @Override
     public void deleteTag(int tagId) throws ServiceException {
-        if (tagId <= 0) {
-            throw new ServiceException("Invalid id", ErrorCodeEnum.INVALID_INPUT);
-        }
-
+        TagValidator.validateId(tagId);
         try {
             if (!tagDao.deleteTag(tagId)) {
                 LOGGER.error("Failed to delete tag");
-                throw new ServiceException("Failed to delete tag", ErrorCodeEnum.FAILED_TO_DELETE_TAG);
+                throw new ServiceException("Failed to delete tag because it id (" + tagId + ") is not found",
+                        ErrorCodeEnum.FAILED_TO_DELETE_TAG);
             }
         } catch (DataAccessException e) {
             LOGGER.error("Following exception was thrown in deleteTag(): " + e.getMessage());
-            throw new ServiceException("Failed to delete tag", ErrorCodeEnum.FAILED_TO_DELETE_TAG);
+            throw new ServiceException("Failed to delete tag by it id: " + tagId,
+                    ErrorCodeEnum.FAILED_TO_DELETE_TAG);
         }
     }
 }

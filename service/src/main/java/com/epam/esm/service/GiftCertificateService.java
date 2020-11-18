@@ -2,6 +2,7 @@ package com.epam.esm.service;
 
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.service.exception.ServiceException;
+import com.epam.esm.service.request.CertificateRequestBody;
 
 import java.util.List;
 
@@ -41,7 +42,7 @@ public interface GiftCertificateService {
      * @throws ServiceException when failed to get {@code GiftCertificate} from persistence layer.
      * @return List<GiftCertificate> - all existing certificates in persistence layer.
      */
-    List<GiftCertificate> getGiftCertificatesByContent() throws ServiceException;
+    List<GiftCertificate> geAllCertificatesByContent() throws ServiceException;
 
     /**
      * Retrieves {@code GiftCertificate} from persistence layer

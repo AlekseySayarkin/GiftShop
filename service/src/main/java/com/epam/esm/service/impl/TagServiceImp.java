@@ -32,7 +32,7 @@ public class TagServiceImp implements TagService {
             return tagDao.getTag(name);
         } catch (DataAccessException e) {
             LOGGER.error("Following exception was thrown in getTag(String name): " + e.getMessage());
-            throw new ServiceException("Failed to get tag by its name: " + name,
+            throw new ServiceException("Failed to get tag by it name: " + name,
                     ErrorCodeEnum.FAILED_TO_RETRIEVE_TAG);
         }
     }
@@ -68,7 +68,7 @@ public class TagServiceImp implements TagService {
             return tag;
         } catch (DataAccessException e) {
             LOGGER.error("Following exception was thrown in addTag(): " + e.getMessage());
-            throw new ServiceException("Failed to add tag: it already exist", ErrorCodeEnum.FAILED_TO_ADD_TAG);
+            throw new ServiceException("Failed to add tag: tag already exists", ErrorCodeEnum.FAILED_TO_ADD_TAG);
         } catch (PersistenceException e) {
             LOGGER.error("Following exception was thrown in addTag(): " + e.getMessage());
             throw new ServiceException(e.getMessage(), ErrorCodeEnum.FAILED_TO_ADD_TAG);

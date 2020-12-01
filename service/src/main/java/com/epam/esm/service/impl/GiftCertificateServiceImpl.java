@@ -119,6 +119,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             throw new ServiceException("Failed to get certificate", ErrorCodeEnum.FAILED_TO_RETRIEVE_CERTIFICATE);
         }
     }
+
     @Override
     public List<GiftCertificate> getGiftCertificates(CertificateRequestBody requestBody) throws ServiceException {
         if (requestBody == null) {
@@ -132,8 +133,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             if (requestBody.getSortBy() == null) {
                 throw new ServiceException("Error: sort by input is missing", ErrorCodeEnum.INVALID_SORT_INPUT);
             }
-            return getSortedCertificates(
-                    requestBody.getSortType(), requestBody.getSortBy());
+            return getSortedCertificates(requestBody.getSortType(), requestBody.getSortBy());
         } else {
             if (requestBody.getSortBy() != null) {
                 throw new ServiceException("Error: sort type input is missing", ErrorCodeEnum.INVALID_SORT_INPUT);

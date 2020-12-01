@@ -19,15 +19,17 @@ public class TagServiceImp implements TagService {
     private static final Logger LOGGER = LogManager.getLogger(TagServiceImp.class);
 
     private final TagDao tagDao;
+    private final TagValidator tagValidator;
 
     @Autowired
-    public TagServiceImp(TagDao tagDao) {
+    public TagServiceImp(TagDao tagDao, TagValidator tagValidator) {
         this.tagDao = tagDao;
+        this.tagValidator = tagValidator;
     }
 
     @Override
     public Tag getTag(String name) throws ServiceException {
-        TagValidator.validateName(name);
+        tagValidator.validateName(name);
         try {
             return tagDao.getTag(name);
         } catch (DataAccessException e) {
@@ -39,7 +41,7 @@ public class TagServiceImp implements TagService {
 
     @Override
     public Tag getTag(int id) throws ServiceException {
-        TagValidator.validateId(id);
+        tagValidator.validateId(id);
         try {
             return tagDao.getTag(id);
         } catch (DataAccessException e) {
@@ -61,7 +63,7 @@ public class TagServiceImp implements TagService {
 
     @Override
     public Tag addTag(Tag tag) throws ServiceException {
-        TagValidator.validateTag(tag);
+        tagValidator.validateTag(tag);
         try {
             int id = tagDao.addTag(tag);
             tag.setId(id);
@@ -77,7 +79,7 @@ public class TagServiceImp implements TagService {
 
     @Override
     public void deleteTag(int tagId) throws ServiceException {
-        TagValidator.validateId(tagId);
+        tagValidator.validateId(tagId);
         try {
             if (!tagDao.deleteTag(tagId)) {
                 LOGGER.error("Failed to delete tag");

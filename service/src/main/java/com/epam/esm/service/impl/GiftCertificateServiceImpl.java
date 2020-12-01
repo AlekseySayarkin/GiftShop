@@ -12,7 +12,6 @@ import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.request.SortParameter;
 import com.epam.esm.service.request.SortType;
 import com.epam.esm.service.util.CertificateValidator;
-import com.epam.esm.service.util.TagValidator;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,16 +29,19 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     private final GiftCertificateDAO giftCertificateDAO;
     private final TagDao tagDao;
+    private final CertificateValidator certificateValidator;
 
     @Autowired
-    public GiftCertificateServiceImpl(GiftCertificateDAO giftCertificateDAO, TagDao tagDao) {
+    public GiftCertificateServiceImpl(GiftCertificateDAO giftCertificateDAO, TagDao tagDao,
+                                      CertificateValidator certificateValidator) {
         this.giftCertificateDAO = giftCertificateDAO;
         this.tagDao = tagDao;
+        this.certificateValidator = certificateValidator;
     }
 
     @Override
     public GiftCertificate getGiftCertificate(String name) throws ServiceException {
-        CertificateValidator.validateName(name);
+        certificateValidator.validateName(name);
         try {
             return giftCertificateDAO.getGiftCertificate(name);
         } catch (DataAccessException e) {
@@ -51,7 +53,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     public GiftCertificate getGiftCertificate(int id) throws ServiceException {
-        CertificateValidator.validateId(id);
+        certificateValidator.validateId(id);
         try {
             return giftCertificateDAO.getGiftCertificate(id);
         } catch (DataAccessException e) {
@@ -88,7 +90,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     public List<GiftCertificate> getGiftCertificateByTagName(String tagName) throws ServiceException {
-        TagValidator.validateName(tagName);
+        certificateValidator.validateName(tagName);
         try {
             return giftCertificateDAO.getGiftCertificateByTagName(tagName);
         } catch (DataAccessException e) {
@@ -163,7 +165,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     @Transactional
     public GiftCertificate addGiftCertificate(GiftCertificate giftCertificate) throws ServiceException {
-        CertificateValidator.validateCertificate(giftCertificate);
+        certificateValidator.validateCertificate(giftCertificate);
         try {
             giftCertificate.setCreateDate(ZonedDateTime.ofInstant(Instant.now(), ZoneOffset.UTC));
             giftCertificate.setLastUpdateDate(giftCertificate.getCreateDate());
@@ -187,7 +189,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     @Transactional
     public void deleteGiftCertificate(GiftCertificate giftCertificate) throws ServiceException {
-        CertificateValidator.validateCertificate(giftCertificate);
+        certificateValidator.validateCertificate(giftCertificate);
         try {
             for (Tag tag : giftCertificate.getTags()) {
                 giftCertificateDAO.deleteCertificateTagRelation(giftCertificate.getId(), tag.getId());
@@ -207,7 +209,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     @Transactional
     public void updateGiftCertificate(GiftCertificate giftCertificate) throws ServiceException {
-        CertificateValidator.validateCertificate(giftCertificate);
+        certificateValidator.validateCertificate(giftCertificate);
         try {
             giftCertificate.setLastUpdateDate(ZonedDateTime.ofInstant(Instant.now(), ZoneOffset.UTC));
 

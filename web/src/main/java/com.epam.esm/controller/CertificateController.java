@@ -36,15 +36,16 @@ public class CertificateController {
         return giftCertificateService.addGiftCertificate(giftCertificate);
     }
 
-    @DeleteMapping("/certificates")
-    public HttpStatus deleteGiftCertificate(@RequestBody GiftCertificate giftCertificate) throws ServiceException {
-        giftCertificateService.deleteGiftCertificate(giftCertificate);
+    @DeleteMapping("/certificates/{id}")
+    public HttpStatus deleteGiftCertificate( @PathVariable int id) throws ServiceException {
+        giftCertificateService.deleteGiftCertificate(id);
         return HttpStatus.OK;
     }
 
-    @PutMapping("/certificates")
-    public HttpStatus updateGiftCertificate(@RequestBody GiftCertificate giftCertificate) throws ServiceException {
-        giftCertificateService.updateGiftCertificate(giftCertificate);
+    @PutMapping("/certificates/{id}")
+    public HttpStatus updateGiftCertificate(
+            @RequestBody GiftCertificate giftCertificate, @PathVariable int id) throws ServiceException {
+        giftCertificateService.updateGiftCertificate(giftCertificate, id);
         return HttpStatus.OK;
     }
 }

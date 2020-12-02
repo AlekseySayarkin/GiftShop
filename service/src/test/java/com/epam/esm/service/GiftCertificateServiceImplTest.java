@@ -52,6 +52,7 @@ public class GiftCertificateServiceImplTest {
 
     private GiftCertificate initCertificate() {
         GiftCertificate giftCertificate = new GiftCertificate();
+        giftCertificate.setId(1);
         giftCertificate.setName("Tourism");
         giftCertificate.setDescription("Description");
         giftCertificate.setPrice(10);
@@ -140,17 +141,12 @@ public class GiftCertificateServiceImplTest {
     @Test
     public void whenTryDeleteCertificate_thenThrowException() {
         GiftCertificate givenCertificate = initCertificate();
-        Tag givenTag = new Tag(1,"spa");
 
         try {
-            giftCertificateService.deleteGiftCertificate(givenCertificate);
+            giftCertificateService.deleteGiftCertificate(givenCertificate.getId());
         } catch (ServiceException e) {
-            Assert.assertEquals("Failed to delete certificate because it id ("
-                    + givenCertificate.getId() + ") is not found", e.getMessage());
+            Assert.assertEquals("Failed to validate: certificate is empty", e.getMessage());
         }
-
-        Mockito.verify(giftCertificateDAO).deleteCertificateTagRelation(givenCertificate.getId(), givenTag.getId());
-        Mockito.verify(giftCertificateDAO).deleteGiftCertificate(givenCertificate.getId());
     }
 
     @Test

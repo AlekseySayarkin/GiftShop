@@ -126,21 +126,26 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     public List<GiftCertificate> getGiftCertificates(CertificateRequestBody requestBody) throws ServiceException {
         if (requestBody == null) {
             return geAllCertificatesByContent();
+        } else {
+            return getGiftCertificatesByRequestBody(requestBody);
         }
+    }
 
+    private List<GiftCertificate> getGiftCertificatesByRequestBody(CertificateRequestBody requestBody)
+            throws ServiceException {
         if (requestBody.getContent() != null) {
             return getGiftCertificatesByContent(requestBody.getContent());
         }
+
         if (requestBody.getSortType() != null) {
             if (requestBody.getSortBy() == null) {
                 throw new ServiceException("Error: sort by input is missing", ErrorCodeEnum.INVALID_SORT_INPUT);
             }
             return getSortedCertificates(requestBody.getSortType(), requestBody.getSortBy());
-        } else {
-            if (requestBody.getSortBy() != null) {
-                throw new ServiceException("Error: sort type input is missing", ErrorCodeEnum.INVALID_SORT_INPUT);
-            }
+        } else if (requestBody.getSortBy() != null) {
+            throw new ServiceException("Error: sort type input is missing", ErrorCodeEnum.INVALID_SORT_INPUT);
         }
+
         if (requestBody.getTagName() != null) {
             return getGiftCertificateByTagName(requestBody.getTagName());
         }
@@ -188,7 +193,8 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     @Transactional
-    public void deleteGiftCertificate(GiftCertificate giftCertificate) throws ServiceException {
+    public void deleteGiftCertificate(int id) throws ServiceException {
+        GiftCertificate giftCertificate = getGiftCertificate(id);
         certificateValidator.validateCertificate(giftCertificate);
         try {
             for (Tag tag : giftCertificate.getTags()) {
@@ -197,7 +203,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
             if (!giftCertificateDAO.deleteGiftCertificate(giftCertificate.getId())) {
                 LOGGER.error("Failed to delete certificate");
-                throw new ServiceException("Failed to delete certificate because it id "
+                throw new ServiceException("Failed to delete certificate because it id ("
                         + giftCertificate.getId() + ") is not found", ErrorCodeEnum.FAILED_TO_DELETE_CERTIFICATE);
             }
         } catch (DataAccessException e) {
@@ -208,7 +214,8 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     @Transactional
-    public void updateGiftCertificate(GiftCertificate giftCertificate) throws ServiceException {
+    public void updateGiftCertificate(GiftCertificate giftCertificate, int id) throws ServiceException {
+        giftCertificate.setId(id);
         certificateValidator.validateCertificate(giftCertificate);
         try {
             giftCertificate.setLastUpdateDate(ZonedDateTime.ofInstant(Instant.now(), ZoneOffset.UTC));

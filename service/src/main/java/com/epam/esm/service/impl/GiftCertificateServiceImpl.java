@@ -190,9 +190,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     public void deleteGiftCertificate(int id) throws ServiceException {
         GiftCertificate giftCertificate = getGiftCertificate(id);
         try {
-            for (Tag tag : giftCertificate.getTags()) {
-                giftCertificateDAO.deleteCertificateTagRelation(giftCertificate.getId(), tag.getId());
-            }
+            giftCertificateDAO.deleteAllCertificateTagRelations(giftCertificate.getId());
 
             if (!giftCertificateDAO.deleteGiftCertificate(giftCertificate.getId())) {
                 LOGGER.error("Failed to delete certificate");

@@ -164,9 +164,7 @@ public class SQLGiftCertificateDaoImplTest {
             giftCertificateDAO.createCertificateTagRelation(given.getId(), tag.getId());
         }
 
-        for (Tag tag: given.getTags()) {
-            giftCertificateDAO.deleteCertificateTagRelation(given.getId(), tag.getId());
-        }
+        giftCertificateDAO.deleteAllCertificateTagRelations(given.getId());
         boolean actual = giftCertificateDAO.deleteGiftCertificate(given.getId());
         Assert.assertTrue(actual);
     }

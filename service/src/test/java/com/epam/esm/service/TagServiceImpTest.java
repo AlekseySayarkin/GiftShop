@@ -6,6 +6,7 @@ import com.epam.esm.dao.impl.SQLTagDaoImpl;
 import com.epam.esm.model.Tag;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.impl.TagServiceImp;
+import com.epam.esm.service.util.impl.TagValidatorImpl;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,55 +23,44 @@ public class TagServiceImpTest {
     @Before
     public void init() {
         tagDao = Mockito.mock(SQLTagDaoImpl.class);
-        tagService = new TagServiceImp(tagDao);
+        tagService = new TagServiceImp(tagDao, new TagValidatorImpl());
     }
 
     @Test
-    public void whenGetTag_thenCorrectlyReturnsIt() throws ServiceException {
-        Tag expected;
-        Tag actual;
+    public void whenGetTag_thenCorrectlyReturnItById() throws ServiceException {
+        Tag given = new Tag(1, "spa");
 
-        expected = new Tag(1, "spa");
+        Mockito.when(tagDao.getTag(given.getId())).thenReturn(given);
 
-        Mockito.when(tagDao.getTag(expected.getId())).thenReturn(expected);
-        Mockito.when(tagDao.getTag(expected.getName())).thenReturn(expected);
-
-        actual = tagService.getTag(expected.getId());
-        Assert.assertEquals(expected, actual);
-        Mockito.verify(tagDao).getTag(expected.getId());
-
-        actual = tagService.getTag(expected.getName());
-        Assert.assertEquals(expected, actual);
-        Mockito.verify(tagDao).getTag(expected.getName());
+        Tag actual = tagService.getTag(given.getId());
+        Assert.assertEquals(given, actual);
+        Mockito.verify(tagDao).getTag(given.getId());
     }
 
     @Test
-    public void whenReturnAllTags_thenCorrectlyReturnAllTags() throws ServiceException {
-        List<Tag> expected;
-        List<Tag> actual;
+    public void whenGetTag_thenCorrectlyReturnItByName() throws ServiceException {
+        Tag given = new Tag(1, "spa");
 
-        expected = new ArrayList<>();
+        Mockito.when(tagDao.getTag(given.getName())).thenReturn(given);
+
+        Tag actual = tagService.getTag(given.getName());
+        Assert.assertEquals(given, actual);
+        Mockito.verify(tagDao).getTag(given.getName());
+    }
+
+
+    @Test
+    public void whenAddTags_thenCorrectlyReturnThem() throws ServiceException {
+        List<Tag> expected = new ArrayList<>();
         for (int i = 1; i < 10; i++) {
             expected.add(new Tag(i, "Tag " + i));
         }
 
         Mockito.when(tagDao.getAllTags()).thenReturn(expected);
-        actual = tagService.getAllTags();
 
+        List<Tag> actual = tagService.getAllTags();
         Assert.assertEquals(expected, actual);
         Mockito.verify(tagDao).getAllTags();
-    }
-
-    @Test
-    public void whenAddTag_thenReturnItId() throws PersistenceException, ServiceException {
-        Tag tag = new Tag("spa");
-        int expectedId = 1;
-
-        Mockito.when(tagDao.addTag(tag)).thenReturn(expectedId);
-        tag = tagService.addTag(tag);
-
-        Assert.assertEquals(expectedId, tag.getId());
-        Mockito.verify(tagDao).addTag(tag);
     }
 
     @Test
@@ -80,18 +70,19 @@ public class TagServiceImpTest {
         try {
             tagService.addTag(tag);
         } catch (ServiceException e) {
-            Assert.assertEquals("Invalid tag", e.getMessage());
+            Assert.assertEquals("Failed to validate: tag name is empty", e.getMessage());
         }
     }
 
     @Test
-    public void whenDeleteTag_thenThrowAnException() {
+    public void whenTryDeleteNonExistingTag_thenThrowException() {
         Tag tag = new Tag(1, "spa");
 
         try {
             tagService.deleteTag(tag.getId());
         } catch (ServiceException e) {
-            Assert.assertEquals("Failed to delete tag", e.getMessage());
+            Assert.assertEquals("Failed to delete tag because it id ("
+                    + tag.getId() +") is not found", e.getMessage());
         }
         Mockito.verify(tagDao).deleteTag(tag.getId());
     }

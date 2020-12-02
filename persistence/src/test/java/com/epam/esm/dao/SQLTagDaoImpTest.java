@@ -31,27 +31,33 @@ public class SQLTagDaoImpTest {
     }
 
     @Test
-    public void whenAddTag_thenCorrectlyReturnIt() throws PersistenceException {
-        Tag actual;
-        Tag expected;
+    public void whenAddTag_thenCorrectlyReturnItById() throws PersistenceException {
+        Tag given = new Tag("Tag to return by id");
 
-        actual = new Tag("Tag to return");
-        actual.setId(tagDao.addTag(actual));
+        given.setId(tagDao.addTag(given));
 
-        expected = tagDao.getTag(actual.getId());
-        Assert.assertEquals(actual, expected);
-
-        expected = tagDao.getTag(actual.getName());
-        Assert.assertEquals(actual, expected);
+        Tag actual = tagDao.getTag(given.getId());
+        Assert.assertEquals(given, actual);
     }
 
     @Test
-    public void whenAddTag_thenCorrectlyDeleteId() throws PersistenceException {
-        Tag tag = new Tag("Tag to delete");
-        tag.setId(tagDao.addTag(tag));
+    public void whenAddTag_thenCorrectlyReturnItByName() throws PersistenceException {
+        Tag given = new Tag("Tag to return by name");
 
-        boolean result = tagDao.deleteTag(tag.getId());
-        Assert.assertTrue(result);
+        given.setId(tagDao.addTag(given));
+
+        Tag actual = tagDao.getTag(given.getName());
+        Assert.assertEquals(given, actual);
+    }
+
+    @Test
+    public void whenAddTag_thenCorrectlyDeleteIdById() throws PersistenceException {
+        Tag given = new Tag("Tag to delete");
+
+        given.setId(tagDao.addTag(given));
+
+        boolean actual = tagDao.deleteTag(given.getId());
+        Assert.assertTrue(actual);
     }
 
     @Test
@@ -59,24 +65,22 @@ public class SQLTagDaoImpTest {
         Tag tag = new Tag("Tag to add");
 
         int id = tagDao.addTag(tag);
+
         Assert.assertNotEquals(0, id);
     }
 
     @Test
     public void whenAddTags_thenCorrectlyReturnsIt() throws PersistenceException {
-        List<Tag> expected;
-        List<Tag> actual;
+        List<Tag> given = new ArrayList<>();
+        given.add(new Tag("First tag"));
+        given.add(new Tag("Second tag"));
+        given.add(new Tag("Third tag"));
 
-        expected = new ArrayList<>();
-        expected.add(new Tag("Tag one"));
-        expected.add(new Tag("Tag two"));
-        expected.add(new Tag("Tag three"));
-
-        for (Tag tag: expected) {
+        for (Tag tag: given) {
             tag.setId(tagDao.addTag(tag));
         }
 
-        actual = tagDao.getAllTags();
-        Assert.assertEquals(expected, actual);
+        List<Tag> actual = tagDao.getAllTags();
+        Assert.assertEquals(given, actual);
     }
 }

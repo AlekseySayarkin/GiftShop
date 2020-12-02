@@ -208,9 +208,8 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     @Transactional
-    public void updateGiftCertificate(GiftCertificate giftCertificate, int id) throws ServiceException {
+    public GiftCertificate updateGiftCertificate(GiftCertificate giftCertificate, int id) throws ServiceException {
         giftCertificate.setId(id);
-        certificateValidator.validateCertificate(giftCertificate);
         try {
             giftCertificate.setLastUpdateDate(ZonedDateTime.ofInstant(Instant.now(), ZoneOffset.UTC));
 
@@ -218,9 +217,9 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
             if (!giftCertificateDAO.updateGiftCertificate(giftCertificate)) {
                 LOGGER.error("Failed to update certificate");
-                throw new ServiceException("Failed to update certificate because it id "
-                        + giftCertificate.getId() + ") is not found", ErrorCodeEnum.FAILED_TO_UPDATE_CERTIFICATE);
+                throw new ServiceException("Failed to update certificate", ErrorCodeEnum.FAILED_TO_UPDATE_CERTIFICATE);
             }
+            return getGiftCertificate(id);
         } catch (DataAccessException | PersistenceException e) {
             LOGGER.error("Following exception was thrown in updateGiftCertificate(): " + e.getMessage());
             throw new ServiceException("Failed to update certificate", ErrorCodeEnum.FAILED_TO_UPDATE_CERTIFICATE);

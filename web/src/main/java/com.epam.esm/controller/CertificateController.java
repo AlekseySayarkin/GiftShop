@@ -43,9 +43,8 @@ public class CertificateController {
     }
 
     @PutMapping("/certificates/{id}")
-    public HttpStatus updateGiftCertificate(
+    public GiftCertificate updateGiftCertificate(
             @RequestBody GiftCertificate giftCertificate, @PathVariable int id) throws ServiceException {
-        giftCertificateService.updateGiftCertificate(giftCertificate, id);
-        return HttpStatus.OK;
+        return giftCertificateService.updateGiftCertificate(giftCertificate, id);
     }
 }

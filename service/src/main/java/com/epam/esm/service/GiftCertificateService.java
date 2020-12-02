@@ -119,6 +119,7 @@ public interface GiftCertificateService {
      * @param giftCertificate {@code GiftCertificate} which to update in persistence layer.
      * @param id id of {@code GiftCertificate} which to update in persistence layer.
      * @throws ServiceException when failed to update {@code GiftCertificate} in persistence layer.
+     * @return updated {@code GiftCertificate}
      */
-    void updateGiftCertificate(GiftCertificate giftCertificate, int id) throws ServiceException;
+    GiftCertificate updateGiftCertificate(GiftCertificate giftCertificate, int id) throws ServiceException;
 }

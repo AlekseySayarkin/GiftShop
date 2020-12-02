@@ -189,7 +189,6 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Transactional
     public void deleteGiftCertificate(int id) throws ServiceException {
         GiftCertificate giftCertificate = getGiftCertificate(id);
-        certificateValidator.validateCertificate(giftCertificate);
         try {
             for (Tag tag : giftCertificate.getTags()) {
                 giftCertificateDAO.deleteCertificateTagRelation(giftCertificate.getId(), tag.getId());
@@ -197,8 +196,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
             if (!giftCertificateDAO.deleteGiftCertificate(giftCertificate.getId())) {
                 LOGGER.error("Failed to delete certificate");
-                throw new ServiceException("Failed to delete certificate because it id ("
-                        + giftCertificate.getId() + ") is not found", ErrorCodeEnum.FAILED_TO_DELETE_CERTIFICATE);
+                throw new ServiceException("Failed to delete certificate", ErrorCodeEnum.FAILED_TO_DELETE_CERTIFICATE);
             }
         } catch (DataAccessException e) {
             LOGGER.error("Following exception was thrown in deleteGiftCertificate(): " + e.getMessage());
@@ -210,6 +208,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Transactional
     public GiftCertificate updateGiftCertificate(GiftCertificate giftCertificate, int id) throws ServiceException {
         giftCertificate.setId(id);
+        certificateValidator.validateCertificate(giftCertificate);
         try {
             giftCertificate.setLastUpdateDate(ZonedDateTime.ofInstant(Instant.now(), ZoneOffset.UTC));
 

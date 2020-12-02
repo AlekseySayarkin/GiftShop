@@ -136,19 +136,13 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         if (requestBody.getContent() != null) {
             return getGiftCertificatesByContent(requestBody.getContent());
         }
-
-        if (requestBody.getSortType() != null) {
-            if (requestBody.getSortBy() == null) {
-                throw new ServiceException("Error: sort by input is missing", ErrorCodeEnum.INVALID_SORT_INPUT);
-            }
+        if (requestBody.getSortType() != null && requestBody.getSortBy() != null) {
             return getSortedCertificates(requestBody.getSortType(), requestBody.getSortBy());
-        } else if (requestBody.getSortBy() != null) {
-            throw new ServiceException("Error: sort type input is missing", ErrorCodeEnum.INVALID_SORT_INPUT);
         }
-
         if (requestBody.getTagName() != null) {
             return getGiftCertificateByTagName(requestBody.getTagName());
         }
+
         throw new ServiceException("Error: request input body is empty", ErrorCodeEnum.INVALID_SORT_INPUT);
     }
 

@@ -117,8 +117,7 @@ public interface GiftCertificateDAO {
      * Deletes many to many relation with {@code GiftCertificate} and {@code Tag}.
      *
      * @param certificateId {@code GiftCertificate} id which to delete a many to many relation with.
-     * @param tagId {@code Tag} id  which to delete a many to many relation with.
      * @return whether transaction was successful.
      */
-    boolean deleteCertificateTagRelation(int certificateId, int tagId);
+    boolean deleteAllCertificateTagRelations(int certificateId);
 }

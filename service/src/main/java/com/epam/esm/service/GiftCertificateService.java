@@ -98,7 +98,7 @@ public interface GiftCertificateService {
     /**
      * Adds new {@code GiftCertificate} to persistence layer.
      *
-     * @param giftCertificate {@code GiftCertificate} which to be added to persistence layer.
+     * @param giftCertificate {@code GiftCertificate} which to add to persistence layer.
      * @throws ServiceException when failed to add {@code GiftCertificate} to persistence layer.
      * @return {@code GiftCertificate} from persistence layer.
      */
@@ -107,17 +107,19 @@ public interface GiftCertificateService {
     /**
      * Deletes {@code GiftCertificate} from persistence layer.
      *
-     * @param giftCertificate {@code GiftCertificate} which to deleted from persistence layer.
+     * @param id id of {@code GiftCertificate} which to delete from persistence layer.
      * @throws ServiceException when failed to delete {@code GiftCertificate} from persistence layer.
      */
-    void deleteGiftCertificate(GiftCertificate giftCertificate) throws ServiceException;
+    void deleteGiftCertificate(int id) throws ServiceException;
 
     /**
      * Updates {@code GiftCertificate} in persistence layer.
      * Null or default values in {@code GiftCertificate} are not updated.
      *
      * @param giftCertificate {@code GiftCertificate} which to update in persistence layer.
+     * @param id id of {@code GiftCertificate} which to update in persistence layer.
      * @throws ServiceException when failed to update {@code GiftCertificate} in persistence layer.
+     * @return updated {@code GiftCertificate}
      */
-    void updateGiftCertificate(GiftCertificate giftCertificate) throws ServiceException;
+    GiftCertificate updateGiftCertificate(GiftCertificate giftCertificate, int id) throws ServiceException;
 }

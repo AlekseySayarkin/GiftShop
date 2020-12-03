@@ -12,7 +12,6 @@ import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.service.request.SortParameter;
 import com.epam.esm.service.request.SortType;
 import com.epam.esm.service.util.CertificateValidator;
-import com.epam.esm.service.util.TagValidator;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,16 +29,19 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     private final GiftCertificateDAO giftCertificateDAO;
     private final TagDao tagDao;
+    private final CertificateValidator certificateValidator;
 
     @Autowired
-    public GiftCertificateServiceImpl(GiftCertificateDAO giftCertificateDAO, TagDao tagDao) {
+    public GiftCertificateServiceImpl(GiftCertificateDAO giftCertificateDAO, TagDao tagDao,
+                                      CertificateValidator certificateValidator) {
         this.giftCertificateDAO = giftCertificateDAO;
         this.tagDao = tagDao;
+        this.certificateValidator = certificateValidator;
     }
 
     @Override
     public GiftCertificate getGiftCertificate(String name) throws ServiceException {
-        CertificateValidator.validateName(name);
+        certificateValidator.validateName(name);
         try {
             return giftCertificateDAO.getGiftCertificate(name);
         } catch (DataAccessException e) {
@@ -51,7 +53,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     public GiftCertificate getGiftCertificate(int id) throws ServiceException {
-        CertificateValidator.validateId(id);
+        certificateValidator.validateId(id);
         try {
             return giftCertificateDAO.getGiftCertificate(id);
         } catch (DataAccessException e) {
@@ -88,7 +90,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     public List<GiftCertificate> getGiftCertificateByTagName(String tagName) throws ServiceException {
-        TagValidator.validateName(tagName);
+        certificateValidator.validateName(tagName);
         try {
             return giftCertificateDAO.getGiftCertificateByTagName(tagName);
         } catch (DataAccessException e) {
@@ -119,29 +121,28 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             throw new ServiceException("Failed to get certificate", ErrorCodeEnum.FAILED_TO_RETRIEVE_CERTIFICATE);
         }
     }
+
     @Override
     public List<GiftCertificate> getGiftCertificates(CertificateRequestBody requestBody) throws ServiceException {
         if (requestBody == null) {
             return geAllCertificatesByContent();
+        } else {
+            return getGiftCertificatesByRequestBody(requestBody);
         }
+    }
 
+    private List<GiftCertificate> getGiftCertificatesByRequestBody(CertificateRequestBody requestBody)
+            throws ServiceException {
         if (requestBody.getContent() != null) {
             return getGiftCertificatesByContent(requestBody.getContent());
         }
-        if (requestBody.getSortType() != null) {
-            if (requestBody.getSortBy() == null) {
-                throw new ServiceException("Error: sort by input is missing", ErrorCodeEnum.INVALID_SORT_INPUT);
-            }
-            return getSortedCertificates(
-                    requestBody.getSortType(), requestBody.getSortBy());
-        } else {
-            if (requestBody.getSortBy() != null) {
-                throw new ServiceException("Error: sort type input is missing", ErrorCodeEnum.INVALID_SORT_INPUT);
-            }
+        if (requestBody.getSortType() != null && requestBody.getSortBy() != null) {
+            return getSortedCertificates(requestBody.getSortType(), requestBody.getSortBy());
         }
         if (requestBody.getTagName() != null) {
             return getGiftCertificateByTagName(requestBody.getTagName());
         }
+
         throw new ServiceException("Error: request input body is empty", ErrorCodeEnum.INVALID_SORT_INPUT);
     }
 
@@ -163,7 +164,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     @Transactional
     public GiftCertificate addGiftCertificate(GiftCertificate giftCertificate) throws ServiceException {
-        CertificateValidator.validateCertificate(giftCertificate);
+        certificateValidator.validateCertificate(giftCertificate);
         try {
             giftCertificate.setCreateDate(ZonedDateTime.ofInstant(Instant.now(), ZoneOffset.UTC));
             giftCertificate.setLastUpdateDate(giftCertificate.getCreateDate());
@@ -186,17 +187,14 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     @Transactional
-    public void deleteGiftCertificate(GiftCertificate giftCertificate) throws ServiceException {
-        CertificateValidator.validateCertificate(giftCertificate);
+    public void deleteGiftCertificate(int id) throws ServiceException {
+        GiftCertificate giftCertificate = getGiftCertificate(id);
         try {
-            for (Tag tag : giftCertificate.getTags()) {
-                giftCertificateDAO.deleteCertificateTagRelation(giftCertificate.getId(), tag.getId());
-            }
+            giftCertificateDAO.deleteAllCertificateTagRelations(giftCertificate.getId());
 
             if (!giftCertificateDAO.deleteGiftCertificate(giftCertificate.getId())) {
                 LOGGER.error("Failed to delete certificate");
-                throw new ServiceException("Failed to delete certificate because it id "
-                        + giftCertificate.getId() + ") is not found", ErrorCodeEnum.FAILED_TO_DELETE_CERTIFICATE);
+                throw new ServiceException("Failed to delete certificate", ErrorCodeEnum.FAILED_TO_DELETE_CERTIFICATE);
             }
         } catch (DataAccessException e) {
             LOGGER.error("Following exception was thrown in deleteGiftCertificate(): " + e.getMessage());
@@ -206,8 +204,9 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     @Transactional
-    public void updateGiftCertificate(GiftCertificate giftCertificate) throws ServiceException {
-        CertificateValidator.validateCertificate(giftCertificate);
+    public GiftCertificate updateGiftCertificate(GiftCertificate giftCertificate, int id) throws ServiceException {
+        giftCertificate.setId(id);
+        certificateValidator.validateCertificate(giftCertificate);
         try {
             giftCertificate.setLastUpdateDate(ZonedDateTime.ofInstant(Instant.now(), ZoneOffset.UTC));
 
@@ -215,9 +214,9 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
             if (!giftCertificateDAO.updateGiftCertificate(giftCertificate)) {
                 LOGGER.error("Failed to update certificate");
-                throw new ServiceException("Failed to update certificate because it id "
-                        + giftCertificate.getId() + ") is not found", ErrorCodeEnum.FAILED_TO_UPDATE_CERTIFICATE);
+                throw new ServiceException("Failed to update certificate", ErrorCodeEnum.FAILED_TO_UPDATE_CERTIFICATE);
             }
+            return getGiftCertificate(id);
         } catch (DataAccessException | PersistenceException e) {
             LOGGER.error("Following exception was thrown in updateGiftCertificate(): " + e.getMessage());
             throw new ServiceException("Failed to update certificate", ErrorCodeEnum.FAILED_TO_UPDATE_CERTIFICATE);

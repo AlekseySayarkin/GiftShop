@@ -11,6 +11,10 @@ import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.model.Tag;
 import com.epam.esm.service.impl.GiftCertificateServiceImpl;
 import com.epam.esm.service.impl.TagServiceImp;
+import com.epam.esm.service.util.CertificateValidator;
+import com.epam.esm.service.util.TagValidator;
+import com.epam.esm.service.util.impl.CertificateValidatorImpl;
+import com.epam.esm.service.util.impl.TagValidatorImpl;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Value;
@@ -91,14 +95,24 @@ public class GiftShopConfig {
     }
 
     @Bean
-    public TagServiceImp tagServiceImp(TagDao tagDao) {
-        return new TagServiceImp(tagDao);
+    public TagValidator tagValidator() {
+        return new TagValidatorImpl();
+    }
+
+    @Bean
+    public TagServiceImp tagServiceImp(TagDao tagDao, TagValidator tagValidator) {
+        return new TagServiceImp(tagDao, tagValidator);
+    }
+
+    @Bean
+    public CertificateValidator certificateValidator() {
+        return new CertificateValidatorImpl();
     }
 
     @Bean
     public GiftCertificateServiceImpl giftCertificateService(
-            GiftCertificateDAO giftCertificateDAO, TagDao tagDao) {
-        return new GiftCertificateServiceImpl(giftCertificateDAO, tagDao);
+            GiftCertificateDAO giftCertificateDAO, TagDao tagDao, CertificateValidator certificateValidator) {
+        return new GiftCertificateServiceImpl(giftCertificateDAO, tagDao, certificateValidator);
     }
 
     @Bean

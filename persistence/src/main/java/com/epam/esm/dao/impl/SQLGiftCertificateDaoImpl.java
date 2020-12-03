@@ -80,7 +80,7 @@ public class SQLGiftCertificateDaoImpl implements GiftCertificateDAO {
             "insert into CertificateDetails (CertificateID, TagID) values (?, ?)";
 
     private static final String SQL_DELETE_JOIN =
-            "delete from CertificateDetails where (CertificateID = ? and TagID = ?)";
+            "delete from CertificateDetails where (CertificateID = ?)";
 
     private final JdbcTemplate jdbcTemplate;
     private final ResultSetExtractor<List<GiftCertificate>> extractor;
@@ -207,7 +207,7 @@ public class SQLGiftCertificateDaoImpl implements GiftCertificateDAO {
     }
 
     @Override
-    public boolean deleteCertificateTagRelation(int certificateId, int tagId) {
-        return jdbcTemplate.update(SQL_DELETE_JOIN, certificateId, tagId) == 1;
+    public boolean deleteAllCertificateTagRelations(int certificateId) {
+        return jdbcTemplate.update(SQL_DELETE_JOIN, certificateId) == 1;
     }
 }

@@ -12,6 +12,7 @@ import com.epam.esm.service.impl.GiftCertificateServiceImpl;
 import com.epam.esm.service.request.CertificateRequestBody;
 import com.epam.esm.service.request.SortParameter;
 import com.epam.esm.service.request.SortType;
+import com.epam.esm.service.util.impl.CertificateValidatorImpl;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,6 +20,7 @@ import org.mockito.Mockito;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class GiftCertificateServiceImplTest {
@@ -32,73 +34,97 @@ public class GiftCertificateServiceImplTest {
         tagDao = Mockito.mock(SQLTagDaoImpl.class);
         giftCertificateDAO = Mockito.mock(SQLGiftCertificateDaoImpl.class);
 
-        giftCertificateService = new GiftCertificateServiceImpl(giftCertificateDAO, tagDao);
+        giftCertificateService = new GiftCertificateServiceImpl(
+                giftCertificateDAO, tagDao, new CertificateValidatorImpl());
     }
 
-    @Test
-    public void whenGetCertificate_thenCorrectlyReturnsIt() throws ServiceException {
-        GiftCertificate expected;
-        GiftCertificate actual;
+    private List<GiftCertificate> initCertificates() {
+        List<GiftCertificate> certificates = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            GiftCertificate certificate = initCertificate();
+            certificate.setName("name" + i);
 
-        expected = new GiftCertificate();
-        expected.setId(1);
-        expected.setName("Tourism");
-
-        Mockito.when(giftCertificateDAO.getGiftCertificate(expected.getId())).thenReturn(expected);
-        Mockito.when(giftCertificateDAO.getGiftCertificate(expected.getName())).thenReturn(expected);
-
-        actual = giftCertificateService.getGiftCertificate(expected.getId());
-        Assert.assertEquals(expected, actual);
-        Mockito.verify(giftCertificateDAO).getGiftCertificate(expected.getId());
-
-        actual = giftCertificateService.getGiftCertificate(expected.getName());
-        Assert.assertEquals(expected, actual);
-        Mockito.verify(giftCertificateDAO).getGiftCertificate(expected.getName());
-    }
-
-    @Test
-    public void whenReturnAllCertificates_thenCorrectlyReturnAllCertificates() throws ServiceException {
-        List<GiftCertificate> expected;
-        List<GiftCertificate> actual;
-
-        expected = new ArrayList<>();
-        for (int i = 1; i < 10; i++) {
-            GiftCertificate certificate = new GiftCertificate();
-            certificate.setId(i);
-            certificate.setName("Tag " + i);
-            expected.add(certificate);
+            certificates.add(certificate);
         }
 
-        Mockito.when(giftCertificateService.geAllCertificatesByContent()).thenReturn(expected);
-        actual = giftCertificateService.geAllCertificatesByContent();
-
-        Assert.assertEquals(expected, actual);
-        Mockito.verify(giftCertificateDAO).getAllGiftCertificates();
+        return certificates;
     }
 
-    @Test
-    public void whenAddCertificate_thenReturnItId() throws PersistenceException, ServiceException {
+    private GiftCertificate initCertificate() {
         GiftCertificate giftCertificate = new GiftCertificate();
+        giftCertificate.setId(1);
         giftCertificate.setName("Tourism");
         giftCertificate.setDescription("Description");
         giftCertificate.setPrice(10);
         giftCertificate.setCreateDate(ZonedDateTime.now());
         giftCertificate.setLastUpdateDate(ZonedDateTime.now());
         giftCertificate.setDuration(10);
-        Tag tag = new Tag("spa");
+        Tag tag = new Tag(1, "spa");
         giftCertificate.getTags().add(tag);
+
+        return giftCertificate;
+    }
+
+    @Test
+    public void whenGetCertificate_thenCorrectlyReturnsItById() throws ServiceException {
+        GiftCertificate given = new GiftCertificate();
+        given.setId(1);
+        given.setName("Tourism");
+
+        Mockito.when(giftCertificateDAO.getGiftCertificate(given.getId())).thenReturn(given);
+
+        GiftCertificate actual = giftCertificateService.getGiftCertificate(given.getId());
+        Assert.assertEquals(given, actual);
+        Mockito.verify(giftCertificateDAO).getGiftCertificate(given.getId());
+    }
+
+    @Test
+    public void whenGetCertificate_thenCorrectlyReturnsItByName() throws ServiceException {
+        GiftCertificate given = new GiftCertificate();
+        given.setId(1);
+        given.setName("Tourism");
+
+        Mockito.when(giftCertificateDAO.getGiftCertificate(given.getName())).thenReturn(given);
+
+        GiftCertificate actual = giftCertificateService.getGiftCertificate(given.getName());
+        Assert.assertEquals(given, actual);
+        Mockito.verify(giftCertificateDAO).getGiftCertificate(given.getName());
+    }
+
+    @Test
+    public void whenAddGiftCertificates_thenCorrectlyReturnThem() throws ServiceException {
+        List<GiftCertificate> given = new ArrayList<>();
+        for (int i = 1; i < 10; i++) {
+            GiftCertificate certificate = new GiftCertificate();
+            certificate.setId(i);
+            certificate.setName("Tag " + i);
+            given.add(certificate);
+        }
+
+        Mockito.when(giftCertificateService.geAllCertificatesByContent()).thenReturn(given);
+
+        List<GiftCertificate> actual = giftCertificateService.geAllCertificatesByContent();
+        Assert.assertEquals(given, actual);
+        Mockito.verify(giftCertificateDAO).getAllGiftCertificates();
+    }
+
+    @Test
+    public void whenAddCertificate_thenReturnItId() throws PersistenceException, ServiceException {
+        GiftCertificate givenCertificate = initCertificate();
+        Tag givenTag = new Tag(1,"spa");
         int expectedId = 1;
 
-        Mockito.when(tagDao.addTag(tag)).thenReturn(1);
+        Mockito.when(tagDao.addTag(givenTag)).thenReturn(1);
         Mockito.when(giftCertificateDAO.createCertificateTagRelation(
-                giftCertificate.getId(), tag.getId())).thenReturn(true);
-        Mockito.when(giftCertificateDAO.addGiftCertificate(giftCertificate)).thenReturn(expectedId);
-        giftCertificate = giftCertificateService.addGiftCertificate(giftCertificate);
+                givenCertificate.getId(), givenTag.getId())).thenReturn(true);
+        Mockito.when(giftCertificateDAO.addGiftCertificate(givenCertificate)).thenReturn(expectedId);
 
-        Assert.assertEquals(expectedId, giftCertificate.getId());
-        Mockito.verify(tagDao).addTag(tag);
-        Mockito.verify(giftCertificateDAO).createCertificateTagRelation(giftCertificate.getId(), tag.getId());
-        Mockito.verify(giftCertificateDAO).addGiftCertificate(giftCertificate);
+        givenCertificate = giftCertificateService.addGiftCertificate(givenCertificate);
+        Assert.assertEquals(expectedId, givenCertificate.getId());
+        Mockito.verify(tagDao).addTag(givenTag);
+        Mockito.verify(giftCertificateDAO)
+                .createCertificateTagRelation(givenCertificate.getId(), givenCertificate.getId());
+        Mockito.verify(giftCertificateDAO).addGiftCertificate(givenCertificate);
     }
 
     @Test
@@ -108,60 +134,49 @@ public class GiftCertificateServiceImplTest {
         try {
             giftCertificateService.addGiftCertificate(giftCertificate);
         } catch (ServiceException e) {
-            Assert.assertEquals("Invalid certificate", e.getMessage());
+            Assert.assertEquals("Failed to validate: certificate name is empty", e.getMessage());
         }
     }
 
     @Test
-    public void whenDeleteCertificate_thenThrowException() {
-        GiftCertificate giftCertificate = new GiftCertificate();
-        giftCertificate.setId(1);
-        giftCertificate.setName("Tourism");
-        giftCertificate.setDescription("Description");
-        giftCertificate.setPrice(10);
-        giftCertificate.setCreateDate(ZonedDateTime.now());
-        giftCertificate.setLastUpdateDate(ZonedDateTime.now());
-        giftCertificate.setDuration(10);
-        Tag tag = new Tag("spa");
-        giftCertificate.getTags().add(tag);
+    public void whenTryDeleteCertificate_thenThrowException() {
+        GiftCertificate givenCertificate = initCertificate();
 
         try {
-            giftCertificateService.deleteGiftCertificate(giftCertificate);
+            giftCertificateService.deleteGiftCertificate(givenCertificate.getId());
         } catch (ServiceException e) {
-            Assert.assertEquals("Failed to delete certificate", e.getMessage());
+            Assert.assertEquals("Failed to validate: certificate is empty", e.getMessage());
         }
-
-        Mockito.verify(giftCertificateDAO).deleteCertificateTagRelation(giftCertificate.getId(), tag.getId());
-        Mockito.verify(giftCertificateDAO).deleteGiftCertificate(giftCertificate.getId());
     }
 
     @Test
-    public void whenGetCertificatesFromRequestBody_returnCorrectlyCertificates() throws ServiceException {
-        CertificateRequestBody requestBody = new CertificateRequestBody();
-        List<GiftCertificate> expected;
-        List<GiftCertificate> actual;
+    public void whenAddCertificate_thenReturnThemSortedByDateAsc() throws ServiceException {
+        CertificateRequestBody givenRequestBody = new CertificateRequestBody();
+        givenRequestBody.setSortType(SortType.ASC);
+        givenRequestBody.setSortBy(SortParameter.DATE);
+        List<GiftCertificate> givenCertificates = initCertificates();
 
-        expected = new ArrayList<>();
-        for (int i = 1; i < 10; i++) {
-            GiftCertificate certificate = new GiftCertificate();
-            certificate.setId(i);
-            certificate.setName("Tag " + i);
-            expected.add(certificate);
-        }
+        Mockito.when(giftCertificateDAO.getAllGiftCertificatesSortedByDate(true))
+                .thenReturn(givenCertificates);
 
-        requestBody.setSortType(SortType.ASC);
-        requestBody.setSortBy(SortParameter.DATE);
-        Mockito.when(giftCertificateDAO.getAllGiftCertificatesSortedByDate(true)).thenReturn(expected);
-
-        actual = giftCertificateService.getGiftCertificates(requestBody);
-        Assert.assertEquals(expected, actual);
+        List<GiftCertificate> actual = giftCertificateService.getGiftCertificates(givenRequestBody);
+        Assert.assertEquals(givenCertificates, actual);
         Mockito.verify(giftCertificateDAO).getAllGiftCertificatesSortedByDate(true);
+    }
 
-        requestBody.setSortType(null);
-        requestBody.setContent("Tag");
-        Mockito.when(giftCertificateDAO.getAllGiftCertificates(requestBody.getContent())).thenReturn(expected);
-        actual = giftCertificateService.getGiftCertificates(requestBody);
-        Assert.assertEquals(expected, actual);
-        Mockito.verify(giftCertificateDAO).getAllGiftCertificates(requestBody.getContent());
+    @Test
+    public void whenAddCertificate_thenReturnThemSortedByDateDesc() throws ServiceException {
+        CertificateRequestBody givenRequestBody = new CertificateRequestBody();
+        givenRequestBody.setSortType(SortType.DESC);
+        givenRequestBody.setSortBy(SortParameter.DATE);
+        List<GiftCertificate> givenCertificates = initCertificates();
+        Collections.reverse(givenCertificates);
+
+        Mockito.when(giftCertificateDAO.getAllGiftCertificatesSortedByDate(false))
+                .thenReturn(givenCertificates);
+
+        List<GiftCertificate> actual = giftCertificateService.getGiftCertificates(givenRequestBody);
+        Assert.assertEquals(givenCertificates, actual);
+        Mockito.verify(giftCertificateDAO).getAllGiftCertificatesSortedByDate(false);
     }
 }

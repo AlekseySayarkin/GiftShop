@@ -19,27 +19,29 @@ public class TagServiceImp implements TagService {
     private static final Logger LOGGER = LogManager.getLogger(TagServiceImp.class);
 
     private final TagDao tagDao;
+    private final TagValidator tagValidator;
 
     @Autowired
-    public TagServiceImp(TagDao tagDao) {
+    public TagServiceImp(TagDao tagDao, TagValidator tagValidator) {
         this.tagDao = tagDao;
+        this.tagValidator = tagValidator;
     }
 
     @Override
     public Tag getTag(String name) throws ServiceException {
-        TagValidator.validateName(name);
+        tagValidator.validateName(name);
         try {
             return tagDao.getTag(name);
         } catch (DataAccessException e) {
             LOGGER.error("Following exception was thrown in getTag(String name): " + e.getMessage());
-            throw new ServiceException("Failed to get tag by its name: " + name,
+            throw new ServiceException("Failed to get tag by it name: " + name,
                     ErrorCodeEnum.FAILED_TO_RETRIEVE_TAG);
         }
     }
 
     @Override
     public Tag getTag(int id) throws ServiceException {
-        TagValidator.validateId(id);
+        tagValidator.validateId(id);
         try {
             return tagDao.getTag(id);
         } catch (DataAccessException e) {
@@ -61,14 +63,14 @@ public class TagServiceImp implements TagService {
 
     @Override
     public Tag addTag(Tag tag) throws ServiceException {
-        TagValidator.validateTag(tag);
+        tagValidator.validateTag(tag);
         try {
             int id = tagDao.addTag(tag);
             tag.setId(id);
             return tag;
         } catch (DataAccessException e) {
             LOGGER.error("Following exception was thrown in addTag(): " + e.getMessage());
-            throw new ServiceException("Failed to add tag: it already exist", ErrorCodeEnum.FAILED_TO_ADD_TAG);
+            throw new ServiceException("Failed to add tag: tag already exists", ErrorCodeEnum.FAILED_TO_ADD_TAG);
         } catch (PersistenceException e) {
             LOGGER.error("Following exception was thrown in addTag(): " + e.getMessage());
             throw new ServiceException(e.getMessage(), ErrorCodeEnum.FAILED_TO_ADD_TAG);
@@ -77,7 +79,7 @@ public class TagServiceImp implements TagService {
 
     @Override
     public void deleteTag(int tagId) throws ServiceException {
-        TagValidator.validateId(tagId);
+        tagValidator.validateId(tagId);
         try {
             if (!tagDao.deleteTag(tagId)) {
                 LOGGER.error("Failed to delete tag");
